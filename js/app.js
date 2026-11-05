@@ -582,7 +582,7 @@ if (!visitorId) {
 }
 
 // RESET TOÀN BỘ DỮ LIỆU ĐĂNG NHẬP THỬ NGHIỆM TRÊN TRÌNH DUYỆT ĐỂ BẮT ĐẦU VẬN HÀNH CHÍNH THỨC
-const SYSTEM_VERSION = "2026.11.05.v3_wipe_thayhao";
+const SYSTEM_VERSION = "2026.11.05.v5_noclass";
 if (localStorage.getItem("skyline_system_version") !== SYSTEM_VERSION) {
   localStorage.removeItem(STORAGE_KEYS.USER_ID);
   localStorage.removeItem(STORAGE_KEYS.NICKNAME);

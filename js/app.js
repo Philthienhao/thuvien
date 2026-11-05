@@ -968,14 +968,6 @@ async function handleStudentRegister(nickname, studentClass, pin, campus, avatar
     return;
   }
 
-  if (!cleanClass) {
-    if (errBox) {
-      errBox.textContent = "Vui lòng nhập Lớp học của em (ví dụ: 3/1, 5A, 6/2...)!";
-      errBox.style.display = "block";
-    }
-    toast("Vui lòng nhập Lớp học của em!");
-    return;
-  }
 
   if (!cleanPin || cleanPin.length < 4) {
     if (errBox) {
@@ -3008,16 +3000,15 @@ function initModals() {
     });
   }
 
-  // Submit Student Register (Nickname, Lớp, PIN, Cơ sở, Avatar)
+  // Submit Student Register (Nickname, PIN, Cơ sở, Avatar)
   const triggerStudentRegister = () => {
     const regNickInput = document.getElementById("registerNicknameInput");
-    const regClassInput = document.getElementById("registerClassInput");
     const regPinInput = document.getElementById("registerPinInput");
     const regCampusSelect = document.getElementById("registerCampusSelect");
 
     handleStudentRegister(
       regNickInput ? regNickInput.value : "",
-      regClassInput ? regClassInput.value : "",
+      "",
       regPinInput ? regPinInput.value : "",
       regCampusSelect ? regCampusSelect.value : "Cơ sở 1",
       selectedRegisterAvatar
@@ -3037,18 +3028,11 @@ function initModals() {
   }
 
   const registerNicknameInput = document.getElementById("registerNicknameInput");
-  const registerClassInput = document.getElementById("registerClassInput");
   if (registerNicknameInput) {
     registerNicknameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        if (registerClassInput) registerClassInput.focus();
-      }
-    });
-  }
-  if (registerClassInput) {
-    registerClassInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
         if (registerPinInput) registerPinInput.focus();
+        else triggerStudentRegister();
       }
     });
   }

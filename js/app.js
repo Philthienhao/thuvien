@@ -582,7 +582,7 @@ if (!visitorId) {
 }
 
 // RESET TOÀN BỘ DỮ LIỆU ĐĂNG NHẬP THỬ NGHIỆM TRÊN TRÌNH DUYỆT ĐỂ BẮT ĐẦU VẬN HÀNH CHÍNH THỨC
-const SYSTEM_VERSION = "2026.11.05.v1_clean_launch";
+const SYSTEM_VERSION = "2026.11.05.v3_wipe_thayhao";
 if (localStorage.getItem("skyline_system_version") !== SYSTEM_VERSION) {
   localStorage.removeItem(STORAGE_KEYS.USER_ID);
   localStorage.removeItem(STORAGE_KEYS.NICKNAME);
@@ -590,6 +590,7 @@ if (localStorage.getItem("skyline_system_version") !== SYSTEM_VERSION) {
   localStorage.removeItem(STORAGE_KEYS.PIN);
   localStorage.removeItem(STORAGE_KEYS.CAMPUS);
   localStorage.removeItem(STORAGE_KEYS.CLASS);
+  localStorage.removeItem(STORAGE_KEYS.AVATAR);
   localStorage.removeItem(STORAGE_KEYS.STARS);
   localStorage.removeItem(STORAGE_KEYS.POINTS);
   localStorage.removeItem(STORAGE_KEYS.QUIZ_STARS);
@@ -605,18 +606,19 @@ if (localStorage.getItem("skyline_system_version") !== SYSTEM_VERSION) {
   localStorage.setItem("skyline_system_version", SYSTEM_VERSION);
 }
 
-let currentUserId = localStorage.getItem(STORAGE_KEYS.USER_ID) || null;
-let studentNickname = localStorage.getItem(STORAGE_KEYS.NICKNAME) || localStorage.getItem(STORAGE_KEYS.NAME) || null;
-let studentPin = localStorage.getItem(STORAGE_KEYS.PIN) || "";
-let studentName = studentNickname;
-let studentCampus = localStorage.getItem(STORAGE_KEYS.CAMPUS) || "Cơ sở 1";
-let studentClass = localStorage.getItem(STORAGE_KEYS.CLASS) || studentCampus;
-let studentAvatar = localStorage.getItem(STORAGE_KEYS.AVATAR) || "🪐";
-
 let currentAdminEmail = localStorage.getItem(STORAGE_KEYS.ADMIN_EMAIL) || "";
 let currentAdminRole = localStorage.getItem(STORAGE_KEYS.ADMIN_ROLE) || "";
 let currentAdminCampus = localStorage.getItem(STORAGE_KEYS.ADMIN_CAMPUS) || "Tất cả cơ sở";
 let currentCampusFilter = "all";
+
+// Nếu đang là Admin đăng nhập thì không sử dụng tài khoản học sinh
+let currentUserId = currentAdminEmail ? null : (localStorage.getItem(STORAGE_KEYS.USER_ID) || null);
+let studentNickname = currentAdminEmail ? null : (localStorage.getItem(STORAGE_KEYS.NICKNAME) || localStorage.getItem(STORAGE_KEYS.NAME) || null);
+let studentPin = currentAdminEmail ? "" : (localStorage.getItem(STORAGE_KEYS.PIN) || "");
+let studentName = studentNickname;
+let studentCampus = localStorage.getItem(STORAGE_KEYS.CAMPUS) || "Cơ sở 1";
+let studentClass = localStorage.getItem(STORAGE_KEYS.CLASS) || studentCampus;
+let studentAvatar = localStorage.getItem(STORAGE_KEYS.AVATAR) || "🪐";
 
 let totalPoints = parseInt(localStorage.getItem(STORAGE_KEYS.POINTS), 10) || 0;
 let totalStars = parseInt(localStorage.getItem(STORAGE_KEYS.STARS), 10) || totalPoints || 0;
@@ -649,7 +651,27 @@ function toast(msg) {
 }
 
 function updateProfileUI() {
-  if (studentNickname) {
+  const elStudentPill = document.getElementById("studentPill");
+
+  if (currentAdminEmail) {
+    if (elStudentPill) {
+      if (currentAdminRole === 'super_admin' || currentAdminEmail.toLowerCase().includes('quyenntn')) {
+        elStudentPill.innerHTML = `👑 <strong>Admin Tổng (Cô Quyên)</strong>`;
+        elStudentPill.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(234, 179, 8, 0.4))';
+        elStudentPill.style.border = '1px solid #f59e0b';
+        elStudentPill.style.color = '#78350f';
+        elStudentPill.title = 'Bấm để mở Bảng điều khiển Quản trị';
+        elStudentPill.style.cursor = 'pointer';
+      } else {
+        elStudentPill.innerHTML = `🛡️ <strong>Admin: ${escapeHtml(currentAdminEmail.split('@')[0])}</strong> (${escapeHtml(currentAdminCampus)})`;
+        elStudentPill.style.background = 'rgba(59, 130, 246, 0.2)';
+        elStudentPill.style.border = '1px solid #3b82f6';
+        elStudentPill.style.color = '#1e40af';
+        elStudentPill.title = 'Bấm để mở Bảng điều khiển Quản trị';
+        elStudentPill.style.cursor = 'pointer';
+      }
+    }
+  } else if (studentNickname) {
     localStorage.setItem(STORAGE_KEYS.NICKNAME, studentNickname);
     localStorage.setItem(STORAGE_KEYS.NAME, studentNickname);
     localStorage.setItem(STORAGE_KEYS.CAMPUS, studentCampus);
@@ -664,11 +686,23 @@ function updateProfileUI() {
     localStorage.setItem(STORAGE_KEYS.CHALLENGES, completedChallenges.toString());
     localStorage.setItem(STORAGE_KEYS.STREAK, readingStreak.toString());
 
-    const elStudentPill = document.getElementById("studentPill");
-    if (elStudentPill) elStudentPill.textContent = `${studentAvatar} ${studentNickname} (${studentCampus}) · ${totalStars} ⭐`;
+    if (elStudentPill) {
+      elStudentPill.textContent = `${studentAvatar} ${studentNickname} (${studentCampus}) · ${totalStars} ⭐`;
+      elStudentPill.style.background = '';
+      elStudentPill.style.border = '';
+      elStudentPill.style.color = '';
+      elStudentPill.title = 'Hồ sơ học sinh';
+      elStudentPill.style.cursor = 'pointer';
+    }
   } else {
-    const elStudentPill = document.getElementById("studentPill");
-    if (elStudentPill) elStudentPill.textContent = `✨ Khách chưa đăng nhập`;
+    if (elStudentPill) {
+      elStudentPill.textContent = `✨ Khách chưa đăng nhập`;
+      elStudentPill.style.background = '';
+      elStudentPill.style.border = '';
+      elStudentPill.style.color = '';
+      elStudentPill.title = 'Bấm để đăng nhập';
+      elStudentPill.style.cursor = 'pointer';
+    }
   }
 
   const elPointsStat = document.getElementById("pointsStat");
@@ -1070,6 +1104,24 @@ async function handleAdminLogin(email, password, teacherName, teacherCampus) {
     localStorage.setItem(STORAGE_KEYS.ADMIN_CAMPUS, currentAdminCampus);
     localStorage.setItem(STORAGE_KEYS.ADMIN_PASS, cleanPassword);
 
+    // Xóa triệt để phiên học sinh cũ (như Thầy Hảo Địa Lí) trên máy khi Admin đăng nhập
+    studentNickname = null;
+    studentName = null;
+    studentPin = "";
+    currentUserId = null;
+    totalStars = 0;
+    totalPoints = 0;
+    localStorage.removeItem(STORAGE_KEYS.USER_ID);
+    localStorage.removeItem(STORAGE_KEYS.NICKNAME);
+    localStorage.removeItem(STORAGE_KEYS.NAME);
+    localStorage.removeItem(STORAGE_KEYS.PIN);
+    localStorage.removeItem(STORAGE_KEYS.CAMPUS);
+    localStorage.removeItem(STORAGE_KEYS.CLASS);
+    localStorage.removeItem(STORAGE_KEYS.AVATAR);
+    localStorage.removeItem(STORAGE_KEYS.STARS);
+    localStorage.removeItem(STORAGE_KEYS.POINTS);
+
+    updateProfileUI();
     hideLoginModal();
     playSound('correct');
     toast(`🛡️ Đăng nhập quản trị thành công (${adm.role === 'super_admin' ? '👑 Admin Tổng (Toàn quyền)' : '🛡️ Admin Cấp 2'})!`);
@@ -1082,6 +1134,22 @@ async function handleAdminLogin(email, password, teacherName, teacherCampus) {
 }
 
 function handleLogout() {
+  if (currentAdminEmail) {
+    if (confirm(`Bạn có muốn đăng xuất tài khoản Quản trị (${currentAdminEmail}) không?`)) {
+      currentAdminEmail = "";
+      currentAdminRole = "";
+      currentAdminCampus = "Tất cả cơ sở";
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_EMAIL);
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_ROLE);
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_CAMPUS);
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_PASS);
+      updateProfileUI();
+      toast("Đã đăng xuất tài khoản Quản trị viên.");
+      showLoginModal();
+    }
+    return;
+  }
+
   if (confirm("Em có muốn đổi tài khoản học sinh khác không? Điểm ⭐ và danh hiệu của em vẫn được lưu an toàn.")) {
     studentNickname = null;
     studentName = null;
@@ -1097,6 +1165,8 @@ function handleLogout() {
     localStorage.removeItem(STORAGE_KEYS.NAME);
     localStorage.removeItem(STORAGE_KEYS.PIN);
     localStorage.removeItem(STORAGE_KEYS.CAMPUS);
+    localStorage.removeItem(STORAGE_KEYS.CLASS);
+    localStorage.removeItem(STORAGE_KEYS.AVATAR);
     localStorage.removeItem(STORAGE_KEYS.STARS);
     localStorage.removeItem(STORAGE_KEYS.QUIZ_STARS);
     localStorage.removeItem(STORAGE_KEYS.REVIEW_STARS);

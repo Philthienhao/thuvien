@@ -1,5 +1,16 @@
 [
   {
+    "id": "notif_1793848119715",
+    "type": "teacher_login",
+    "teacherEmail": "philthienhao@skylineschool.edu.vn",
+    "teacherName": "philthienhao",
+    "campus": "Cơ sở 1",
+    "timestamp": "2026-11-05T03:08:39.712Z",
+    "timeStr": "10:08:39 5/11/2026",
+    "message": "Giáo viên philthienhao (philthienhao@skylineschool.edu.vn) - Cơ sở 1 vừa đăng nhập hệ thống",
+    "isRead": false
+  },
+  {
     "id": "notif_1793799906038",
     "type": "teacher_login",
     "teacherEmail": "philthienhao",

@@ -39,5 +39,18 @@
     "lastLogin": "2026-11-04T13:45:05.984Z",
     "visitCount": 1,
     "status": "active"
+  },
+  {
+    "id": "teacher_1793848119713",
+    "email": "philthienhao@skylineschool.edu.vn",
+    "name": "philthienhao",
+    "campus": "Cơ sở 1",
+    "password": "123456",
+    "role": "teacher",
+    "isSubAdmin": false,
+    "firstLogin": "2026-11-05T03:08:39.712Z",
+    "lastLogin": "2026-11-05T03:08:39.712Z",
+    "visitCount": 1,
+    "status": "active"
   }
 ]

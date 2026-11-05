@@ -35,7 +35,7 @@
       <div class="student-pill" id="studentPill">✨ Đang tải...</div>
       <button class="top-icon-btn" id="soundToggle" title="Bật/Tắt âm thanh" aria-label="Bật/Tắt âm thanh">🔊</button>
       <button class="top-icon-btn" id="themeToggle" title="Chuyển chế độ giao diện" aria-label="Chuyển chế độ giao diện">🌙</button>
-      <button class="top-btn" id="adminBtn" title="Bảng điều khiển Quản trị viên" style="background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35);">
+      <button class="top-btn" id="adminBtn" title="Bảng điều khiển Quản trị viên" style="background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35); display: none;">
         🛡️ Quản trị
       </button>
       <button class="top-btn" id="profileBtn" title="Xem hoặc đổi hồ sơ cá nhân">👤 Hồ sơ</button>
@@ -436,7 +436,7 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>© <strong>Sky-Line Virtual Library</strong> · Bản quyền hệ thống thư viện ảo · <a href="#" id="footerAdminLink" style="color:var(--primary-blue); text-decoration:none; font-weight:700;">Góc Quản Trị Viên</a></p>
+    <p>© <strong>Sky-Line Virtual Library</strong> · Bản quyền hệ thống thư viện ảo<span id="footerAdminContainer" style="display: none;"> · <a href="#" id="footerAdminLink" style="color:var(--primary-blue); text-decoration:none; font-weight:700;">Góc Quản Trị Viên</a></span></p>
   </footer>
 
   <!-- ==========================================
@@ -560,8 +560,8 @@
       <div class="login-pane" id="paneAdminLogin">
         <h3 style="margin-bottom: 16px;">🔐 Cổng Đăng Nhập Giáo Viên & Admin</h3>
 
-        <label class="form-label" for="adminEmailInput">Email cá nhân Thầy/Cô hoặc Email Admin Tổng *</label>
-        <input type="email" id="adminEmailInput" placeholder="Ví dụ: quyenntn@skylineschool.edu.vn hoặc email cá nhân" style="margin-bottom: 12px;">
+        <label class="form-label" for="adminEmailInput">Email đăng nhập Quản trị viên *</label>
+        <input type="email" id="adminEmailInput" placeholder="Nhập địa chỉ email..." style="margin-bottom: 12px;">
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 12px;">
           <div>

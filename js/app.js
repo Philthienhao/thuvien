@@ -652,8 +652,13 @@ function toast(msg) {
 
 function updateProfileUI() {
   const elStudentPill = document.getElementById("studentPill");
+  const elAdminBtn = document.getElementById("adminBtn");
+  const elFooterAdmin = document.getElementById("footerAdminContainer");
 
   if (currentAdminEmail) {
+    if (elAdminBtn) elAdminBtn.style.display = "inline-flex";
+    if (elFooterAdmin) elFooterAdmin.style.display = "inline";
+
     if (elStudentPill) {
       if (currentAdminRole === 'super_admin' || currentAdminEmail.toLowerCase().includes('quyenntn')) {
         elStudentPill.innerHTML = `👑 <strong>Admin Tổng (Cô Quyên)</strong>`;
@@ -672,6 +677,9 @@ function updateProfileUI() {
       }
     }
   } else if (studentNickname) {
+    if (elAdminBtn) elAdminBtn.style.display = "none";
+    if (elFooterAdmin) elFooterAdmin.style.display = "none";
+
     localStorage.setItem(STORAGE_KEYS.NICKNAME, studentNickname);
     localStorage.setItem(STORAGE_KEYS.NAME, studentNickname);
     localStorage.setItem(STORAGE_KEYS.CAMPUS, studentCampus);
@@ -695,6 +703,9 @@ function updateProfileUI() {
       elStudentPill.style.cursor = 'pointer';
     }
   } else {
+    if (elAdminBtn) elAdminBtn.style.display = "none";
+    if (elFooterAdmin) elFooterAdmin.style.display = "none";
+
     if (elStudentPill) {
       elStudentPill.textContent = `✨ Khách chưa đăng nhập`;
       elStudentPill.style.background = '';
@@ -1896,8 +1907,8 @@ async function fetchAndRenderAdminDashboard() {
 
     // Update logged-in admin identity pill
     const curAdm = data.currentAdmin || {
-      email: currentAdminEmail || "quyenntn@skylineschool.edu.vn",
-      name: "Admin Tổng (Cô Quyên)",
+      email: currentAdminEmail || "",
+      name: currentAdminRole === 'super_admin' ? "Admin Tổng (Cô Quyên)" : "Admin Quản Trị",
       role: currentAdminRole || "super_admin",
       campus: currentAdminCampus || "Tất cả cơ sở"
     };
@@ -2804,7 +2815,7 @@ async function handleConfirmReset() {
       body: JSON.stringify({ 
         passcode: pass,
         password: pass,
-        email: currentAdminEmail || "quyenntn@skylineschool.edu.vn"
+        email: currentAdminEmail || ""
       })
     });
     const data = await res.json();

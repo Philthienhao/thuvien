@@ -1482,6 +1482,25 @@ async function submitReflection() {
 // ==========================================
 // 10. WEEKLY QUESTS (MỤC TIÊU RÈN LUYỆN BẢN THÂN - KHÔNG CỘNG SAO)
 // ==========================================
+function toggleQuest(questId, msg) {
+  const questCard = document.getElementById(questId);
+  if (!questsCompleted[questId]) {
+    questsCompleted[questId] = true;
+    localStorage.setItem(STORAGE_KEYS.QUESTS, JSON.stringify(questsCompleted));
+    updateProfileUI();
+    playSound('correct');
+    toast(msg || "Tuyệt vời! Em đã hoàn thành một mục tiêu đọc sách! 🌟");
+    if (questCard) questCard.classList.add("completed");
+  } else {
+    questsCompleted[questId] = false;
+    localStorage.setItem(STORAGE_KEYS.QUESTS, JSON.stringify(questsCompleted));
+    updateProfileUI();
+    playSound('click');
+    toast("Đã bỏ đánh dấu mục tiêu.");
+    if (questCard) questCard.classList.remove("completed");
+  }
+}
+
 function completeQuest(questId, msg, bonusPoints = 0) {
   if (questsCompleted[questId]) return;
   questsCompleted[questId] = true;
@@ -1505,27 +1524,22 @@ function initQuests() {
     }
   });
 
-  const q1 = document.getElementById("quest1");
-  if (q1) {
-    q1.addEventListener("click", () => {
-      if (!questsCompleted["quest1"]) {
-        completeQuest("quest1", "Tuyệt vời! Em đã hoàn thành mục tiêu đọc sách 15 phút hôm nay để rèn luyện thói quen tốt! 📘", 0);
-      } else {
-        toast("Mục tiêu này em đã hoàn thành hôm nay rồi nhé! 🌟 Hãy tiếp tục duy trì thói quen tốt.");
-      }
-    });
-  }
+  const questConfigs = [
+    { id: "quest1", msg: "Tuyệt vời! Em đã hoàn thành mục tiêu đọc sách 15 phút hôm nay để rèn luyện thói quen tốt! 📘" },
+    { id: "quest2", msg: "Tuyệt vời! Em đã hoàn thành mục tiêu hỏi chuyện và khám phá tác phẩm với nhân vật văn học! 💭" },
+    { id: "quest3", msg: "Tuyệt vời! Em đã hoàn thành mục tiêu viết và chia sẻ cảm nhận về cuốn sách em yêu thích! 📝" },
+    { id: "quest4", msg: "Cảm ơn em đã lan tỏa tình yêu sách tới bạn bè xung quanh! 🤝" }
+  ];
 
-  const q4 = document.getElementById("quest4");
-  if (q4) {
-    q4.addEventListener("click", () => {
-      if (!questsCompleted["quest4"]) {
-        completeQuest("quest4", "Cảm ơn em đã lan tỏa tình yêu sách tới bạn bè! 🤝", 0);
-      } else {
-        toast("Mục tiêu giới thiệu sách đã hoàn thành tuần này rồi nhé! 🌟");
-      }
-    });
-  }
+  questConfigs.forEach(({ id, msg }) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.cursor = "pointer";
+      el.addEventListener("click", () => {
+        toggleQuest(id, msg);
+      });
+    }
+  });
 }
 
 

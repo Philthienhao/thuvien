@@ -52,18 +52,30 @@ try {
   // @netlify/blobs chưa cài hoặc đang chạy môi trường thuần Node
 }
 
+let cachedStore = undefined;
+
 function getNetlifyStore() {
-  if (netlifyBlobs && (process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT)) {
+  if (cachedStore !== undefined) return cachedStore;
+  if (!netlifyBlobs) {
     try {
-      return netlifyBlobs.getStore('skyline-library');
+      netlifyBlobs = require('@netlify/blobs');
     } catch (e) {
-      console.warn('[DB] Netlify Blobs getStore warning:', e.message);
+      cachedStore = null;
+      return null;
     }
   }
-  return null;
+  try {
+    const store = netlifyBlobs.getStore('skyline-library-v2');
+    cachedStore = store;
+    return store;
+  } catch (e) {
+    console.warn('[DB] Netlify Blobs getStore warning:', e.message);
+    cachedStore = null;
+    return null;
+  }
 }
 
-const isNetlify = Boolean(process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT);
+const isNetlify = Boolean(process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT || process.env.AWS_LAMBDA_FUNCTION_NAME);
 
 async function getBlobOrJSON(key, fileFallback, defaultVal) {
   const store = getNetlifyStore();

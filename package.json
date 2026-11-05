@@ -1,0 +1,17 @@
+{
+  "name": "skyline-virtual-library",
+  "version": "1.0.0",
+  "description": "Trợ lý Thư viện ảo Sky-Line - Open a Book, Open Your Mind!",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["library", "education", "virtual-library", "skyline"],
+  "author": "Sky-Line Education",
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "@supabase/supabase-js": "^2.49.1"
+  }
+}

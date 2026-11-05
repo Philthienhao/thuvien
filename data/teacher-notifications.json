@@ -1,0 +1,35 @@
+[
+  {
+    "id": "notif_1793799906038",
+    "type": "teacher_login",
+    "teacherEmail": "philthienhao",
+    "teacherName": "philthienhao",
+    "campus": "Cơ sở 1",
+    "timestamp": "2026-11-04T13:45:05.984Z",
+    "timeStr": "20:45:05 4/11/2026",
+    "message": "Giáo viên philthienhao (philthienhao) - Cơ sở 1 vừa đăng nhập hệ thống",
+    "isRead": false
+  },
+  {
+    "id": "notif_1793763660624",
+    "type": "teacher_login",
+    "teacherEmail": "co.mai.1793763660610@gmail.com",
+    "teacherName": "Cô Mai (Ngữ Văn)",
+    "campus": "Cơ sở 3",
+    "timestamp": "2026-11-04T03:41:00.611Z",
+    "timeStr": "10:41:00 4/11/2026",
+    "message": "Giáo viên Cô Mai (Ngữ Văn) (co.mai.1793763660610@gmail.com) - Cơ sở 3 vừa đăng nhập hệ thống",
+    "isRead": true
+  },
+  {
+    "id": "notif_1793763592643",
+    "type": "teacher_login",
+    "teacherEmail": "thaynam.toan@gmail.com",
+    "teacherName": "Thầy Nam (Môn Toán)",
+    "campus": "Cơ sở 3",
+    "timestamp": "2026-11-04T03:39:52.601Z",
+    "timeStr": "10:39:52 4/11/2026",
+    "message": "Giáo viên Thầy Nam (Môn Toán) (thaynam.toan@gmail.com) - Cơ sở 3 vừa đăng nhập hệ thống",
+    "isRead": true
+  }
+]

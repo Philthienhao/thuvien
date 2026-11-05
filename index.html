@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trợ lý Thư viện ảo Sky-Line · Open a Book, Open Your Mind!</title>
+  <meta name="description" content="Trợ lý Thư viện ảo Sky-Line - Nơi gặp gỡ nhân vật văn học, thử thách khả năng đọc hiểu và lan tỏa tình yêu sách.">
+  <link rel="icon" type="image/gif" href="avatargif.gif?v=hoanchinh">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Confetti Canvas for Celebrations -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- TOPBAR / NAVIGATION -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <img src="avatargif.gif?v=hoanchinh" alt="Sky-Line Mascot Avatar" class="brand-avatar-img">
+      </div>
+      <div class="brand-info">
+        <h1>SKY-LINE VIRTUAL LIBRARY</h1>
+        <p>Trợ lý Thư viện ảo · Open a Book, Open Your Mind!</p>
+      </div>
+    </div>
+    
+    <div class="top-right">
+      <div class="student-pill" id="studentPill">✨ Đang tải...</div>
+      <button class="top-icon-btn" id="soundToggle" title="Bật/Tắt âm thanh" aria-label="Bật/Tắt âm thanh">🔊</button>
+      <button class="top-icon-btn" id="themeToggle" title="Chuyển chế độ giao diện" aria-label="Chuyển chế độ giao diện">🌙</button>
+      <button class="top-btn" id="adminBtn" title="Bảng điều khiển Quản trị viên" style="background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35);">
+        🛡️ Quản trị
+      </button>
+      <button class="top-btn" id="profileBtn" title="Xem hoặc đổi hồ sơ cá nhân">👤 Hồ sơ</button>
+      <button class="top-icon-btn" id="logoutBtn" title="Đăng nhập tài khoản khác / Đăng xuất" aria-label="Đổi tài khoản">🚪</button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span>✨</span> Chào mừng nhà khám phá tri thức!
+      </div>
+      <h2>Mỗi cuốn sách mở ra<br><span>một thế giới kỳ diệu.</span></h2>
+      <p>Gặp gỡ nhân vật em yêu thích, thử thách khả năng đọc hiểu, tích lũy <strong>⭐ Ngôi sao thi đua</strong> để nhận phần thưởng lớn cuối tháng!</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('characters').scrollIntoView({behavior:'smooth'})">
+          💬 Gặp nhân vật ngay
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('challenge').scrollIntoView({behavior:'smooth'})">
+          🎯 Chơi trò chơi (+⭐)
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('book-request').scrollIntoView({behavior:'smooth'})">
+          📬 Đề xuất sách mới (+5⭐)
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <span class="spark s1">✨</span>
+      <span class="spark s2">🌟</span>
+      <span class="spark s3">💫</span>
+      <div class="book-stack">
+        <img src="avatargif.gif?v=hoanchinh" alt="Sky-Line Virtual Library Mascot" class="hero-mascot-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main>
+    <!-- STATS OVERVIEW: ĐIỂM NGÔI SAO THI ĐUA -->
+    <section class="stats-grid" aria-label="Thống kê thi đua của em">
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-info">
+          <strong id="pointsStat">0</strong>
+          <span>⭐ Ngôi sao tích lũy</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🏅</div>
+        <div class="stat-info">
+          <strong id="badgeStat">0</strong>
+          <span>Huy hiệu của em</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📖</div>
+        <div class="stat-info">
+          <strong id="challengeStat">0</strong>
+          <span>Trò chơi đã hoàn thành</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-info">
+          <strong id="streakStat">0 ngày</strong>
+          <span>Chuỗi ngày đọc sách</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION HEADING: CHAT WITH CHARACTERS -->
+    <div class="section-heading" id="characters">
+      <div>
+        <h3>💬 Chat với nhân vật văn học</h3>
+        <p>Chọn một người bạn trong trang sách để hỏi bài, phân tích tác phẩm hay tâm sự.</p>
+      </div>
+      <button class="small-link" id="resetChat">Làm mới cuộc trò chuyện ↻</button>
+    </div>
+
+    <!-- INTERACTIVE GRID: CHARACTER ROLEPLAY & BOOK QUIZ -->
+    <div class="interactive-grid">
+      <!-- PANEL 1: CHARACTER ROLEPLAY -->
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Nhân vật đang chờ em</h3>
+            <p>Chọn một nhân vật để bắt đầu tương tác</p>
+          </div>
+          <span class="tag-badge">AI TRỢ LÝ VĂN HỌC</span>
+        </div>
+
+        <div class="character-list">
+          <div class="character-card active" data-character="deman">
+            <div class="char-avatar">🦗</div>
+            <div>
+              <h4>Dế Mèn</h4>
+              <p>Dũng cảm, đôi lúc bốc đồng, biết suy ngẫm.</p>
+            </div>
+            <button type="button">Trò chuyện với Dế Mèn</button>
+          </div>
+
+          <div class="character-card" data-character="tam">
+            <div class="char-avatar tam">👑</div>
+            <div>
+              <h4>Tấm</h4>
+              <p>Nhân hậu, kiên trì và giàu nghị lực.</p>
+            </div>
+            <button type="button">Trò chuyện với Tấm</button>
+          </div>
+
+          <div class="character-card" data-character="fox">
+            <div class="char-avatar fox">🦊</div>
+            <div>
+              <h4>Cáo</h4>
+              <p>Người bạn gợi mở về tình bạn và sự gắn bó.</p>
+            </div>
+            <button type="button">Trò chuyện với Cáo</button>
+          </div>
+        </div>
+
+        <!-- CHAT BOX -->
+        <div class="chatbox">
+          <div class="chat-top">
+            <span class="online-dot"></span>
+            <span id="chatTitle">Dế Mèn · Người bạn văn học</span>
+            <button class="small-link" id="btnConfigAI" style="margin-left:auto; font-size:0.75rem; padding:4px 10px; display:flex; align-items:center; gap:4px;" title="Cài đặt Google Gemini API Key">
+              ⚙️ Cài đặt AI
+            </button>
+            <span class="ai-status-indicator" id="aiStatus" style="font-size:0.75rem;">● Tri thức Văn học</span>
+          </div>
+
+          <div class="chat-messages" id="chatMessages" aria-live="polite">
+            <div class="bubble bot">
+              Chào bạn! Mình là Dế Mèn. Mình đã học được rằng sự kiêu căng có thể làm tổn thương người khác. Bạn muốn cùng mình phân tích tác phẩm hay khám phá bài học về tình bạn chứ?
+            </div>
+          </div>
+
+          <div class="quick-prompts">
+            <button type="button" data-prompt="Phân tích nhân vật Tấm">Phân tích nhân vật Tấm</button>
+            <button type="button" data-prompt="Bài học lớn nhất của bạn là gì?">Bài học lớn nhất là gì?</button>
+            <button type="button" data-prompt="Kể về Dế Choắt">Kể về Dế Choắt</button>
+            <button type="button" data-prompt="Hãy đặt cho em một câu đố nhé!">Đố em một câu nhé!</button>
+          </div>
+
+          <form class="chat-input-area" id="chatForm">
+            <input type="text" id="chatInput" placeholder="Nhập câu hỏi (VD: phân tích nhân vật Tấm, kể về Dế Choắt...)" autocomplete="off" aria-label="Nhập câu hỏi">
+            <button class="btn-send" type="submit">Gửi ➤</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- PANEL 2: BOOK QUIZ CHALLENGE (CHƠI TRÒ CHƠI NHẬN SAO) -->
+      <section class="panel" id="challenge">
+        <div class="panel-head">
+          <div>
+            <h3>🎯 Thử thách hiểu sách (Trò chơi trắc nghiệm)</h3>
+            <p>Mỗi câu trả lời đúng nhận ngay +10 ⭐ Ngôi sao thi đua!</p>
+          </div>
+          <span class="tag-badge">+10 ⭐ / CÂU</span>
+        </div>
+
+        <div class="challenge-body">
+          <label for="bookSelect" style="font-size:0.75rem; font-weight:800; color:var(--text-muted); letter-spacing:0.5px;">
+            CHỌN CUỐN SÁCH THỬ THÁCH
+          </label>
+          <select class="book-select" id="bookSelect">
+            <option value="deman">Dế Mèn phiêu lưu ký</option>
+            <option value="tam">Tấm Cám</option>
+            <option value="hoangtu">Hoàng tử bé</option>
+          </select>
+
+          <div class="quiz-progress-bar-container">
+            <div class="quiz-progress-bar-fill" id="quizProgressBar"></div>
+          </div>
+
+          <div class="progress-label" id="questionCount">Câu hỏi 1/5 · Mức độ: Cơ bản</div>
+          <p class="question-text" id="questionText">Bài học quan trọng Dế Mèn nhận ra sau những sai lầm của mình là gì?</p>
+
+          <div class="answers-grid" id="answers">
+            <!-- Dynamic quiz answer buttons injected by app.js -->
+          </div>
+
+          <div class="quiz-feedback" id="feedback" role="status"></div>
+
+          <div class="challenge-footer">
+            <div class="score-badge" id="scoreText">⭐ Ngôi sao bài này: 0</div>
+            <button class="btn-next-question" id="nextQuestion" disabled>Câu tiếp theo →</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- LOWER GRID: LEADERBOARD & REFLECTION -->
+    <div class="lower-grid">
+      <!-- LEADERBOARD PANEL (CÔNG KHAI 5 CƠ SỞ HOẶC TOÀN HỆ THỐNG - ĐỘNG LỰC TOP 3) -->
+      <section class="panel">
+        <div class="panel-head" style="flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3>🏆 Bảng vàng độc giả (⭐ Ngôi sao thi đua)</h3>
+            <p>Thi đua tích lũy sao nhận phần thưởng cuối tháng từ Admin</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <select id="leaderboardCampusFilter" class="campus-select" style="margin-bottom:0; padding:6px 12px; font-size:0.82rem; font-weight:600; width:auto; border-radius:var(--radius-pill);">
+              <option value="all">🌐 Toàn hệ thống (5 Cơ sở)</option>
+              <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
+              <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
+              <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
+              <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
+              <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- THÔNG TIN VỊ THỨ CỦA BẠN (TẠO ĐỘNG LỰC THI ĐUA TOP 3) -->
+        <div id="myRankBanner" class="my-rank-banner" style="display:none;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:1.6rem;" id="myRankIcon">🌟</span>
+            <div>
+              <b id="myRankTitle" style="font-size:0.92rem; color:var(--text-main);">Vị trí của bạn: Hạng #--</b>
+              <p id="myRankSubtitle" style="font-size:0.78rem; color:var(--text-muted); margin:2px 0 0;"></p>
+            </div>
+          </div>
+          <span id="myRankBadge" class="tag-badge" style="background:rgba(59,130,246,0.15); color:var(--primary-blue); font-weight:700;">⭐ 0 sao</span>
+        </div>
+
+        <div class="leaderboard-list" id="leaderboard">
+          <!-- Dynamically populated from actual registered users -->
+        </div>
+      </section>
+
+      <!-- REFLECTION / REVIEW PANEL (TỐI THIỂU 50 TỪ & ADMIN CHẤM ĐIỂM 1-5 SAO) -->
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>✍️ Góc cảm nhận & Review sách</h3>
+            <p>Chia sẻ cảm nghĩ sâu sắc sau khi đọc một cuốn sách hay</p>
+          </div>
+          <span class="tag-badge" style="background:rgba(245, 158, 11, 0.12); color:#b45309; border-color:rgba(245,158,11,0.3);">TỐI THIỂU 50 TỪ · ADMIN CHẤM 1-5 ⭐</span>
+        </div>
+
+        <div class="reflection-body">
+          <p>
+            Cuốn sách nào khiến em ấn tượng nhất? Hãy viết bài cảm nhận thực sự (<strong>tối thiểu đủ 50 từ</strong>). 
+            Hệ thống sẽ chuyển bài viết về tài khoản <strong>Thầy/Cô Admin</strong> để đọc và trực tiếp cho điểm từ <strong>1 đến 5 ⭐ Ngôi sao thi đua</strong> dựa trên chất lượng bài viết của em!
+          </p>
+          <textarea id="reflectionText" placeholder="Em hãy chia sẻ cảm nhận chân thực về nhân vật, cốt truyện hoặc bài học sâu sắc mà em rút ra được sau khi đọc cuốn sách hôm nay (tối thiểu 50 từ)..."></textarea>
+          
+          <div class="reflection-actions">
+            <small class="char-counter" id="reflectionCount" style="font-weight:600;">
+              <span style="color:#ef4444;">0/50 từ</span> <span style="color:var(--text-muted);">(Cần thêm 50 từ để mở nút gửi)</span>
+            </small>
+            <button class="btn-primary btn-disabled" id="submitReflection" disabled title="Cảm nhận cần tối thiểu 50 từ để gửi đến Thầy Cô Admin chấm điểm">
+              Gửi cảm nhận tới Admin (Chờ chấm ⭐)
+            </button>
+          </div>
+
+          <!-- Community reflections feed -->
+          <div class="reflections-feed" id="reflectionsFeed">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SECTION: WEEKLY QUESTS (RÈN LUYỆN BẢN THÂN - KHÔNG CỘNG SAO) -->
+    <div class="section-heading">
+      <div>
+        <h3>🌟 Mục tiêu rèn luyện thói quen đọc sách tuần này</h3>
+        <p>Hoàn thành các mục tiêu rèn luyện để tạo động lực và phát triển thói quen đọc sách mỗi ngày.</p>
+      </div>
+      <span class="tag-badge">RÈN LUYỆN BẢN THÂN</span>
+    </div>
+
+    <section class="quests-grid" aria-label="Nhiệm vụ tuần">
+      <div class="quest-card" id="quest1" title="Bấm vào để xác nhận hoàn thành">
+        <div class="quest-left">
+          <div class="quest-icon">📘</div>
+          <div class="quest-info">
+            <strong>Đọc sách 15 phút</strong>
+            <span>Tự giác rèn luyện thói quen mỗi ngày</span>
+          </div>
+        </div>
+        <div class="quest-check">✓</div>
+      </div>
+
+      <div class="quest-card" id="quest2" title="Tự động hoàn thành khi đặt 2 câu hỏi">
+        <div class="quest-left">
+          <div class="quest-icon">💭</div>
+          <div class="quest-info">
+            <strong>Hỏi nhân vật</strong>
+            <span>Đặt câu hỏi khám phá chiều sâu tác phẩm</span>
+          </div>
+        </div>
+        <div class="quest-check">✓</div>
+      </div>
+
+      <div class="quest-card" id="quest3" title="Tự động hoàn thành khi gửi review">
+        <div class="quest-left">
+          <div class="quest-icon">📝</div>
+          <div class="quest-info">
+            <strong>Viết cảm nhận</strong>
+            <span>Chia sẻ suy nghĩ sau khi đọc sách</span>
+          </div>
+        </div>
+        <div class="quest-check">✓</div>
+      </div>
+
+      <div class="quest-card" id="quest4" title="Bấm vào để xác nhận chia sẻ với bạn bè">
+        <div class="quest-left">
+          <div class="quest-icon">🤝</div>
+          <div class="quest-info">
+            <strong>Lan tỏa văn hóa đọc</strong>
+            <span>Giới thiệu cuốn sách hay tới bạn bè</span>
+          </div>
+        </div>
+        <div class="quest-check">✓</div>
+      </div>
+    </section>
+
+    <!-- SECTION: BOOK REQUEST (BẢO MẬT: CHỈ HIỂN THỊ TRÊN TÀI KHOẢN ADMIN CẤP 1 & 2) -->
+    <div class="section-heading" id="book-request">
+      <div>
+        <h3>📬 Góc đề xuất sách mới</h3>
+        <p>Gửi đề xuất cuốn sách em mong muốn thư viện nhà trường bổ sung.</p>
+      </div>
+      <span class="tag-badge" style="background:rgba(59,130,246,0.12); color:var(--primary-blue);">BẢO MẬT ADMIN NẮM</span>
+    </div>
+
+    <section class="panel">
+      <div class="reflection-body">
+        <p>
+          Hãy chia sẻ tên cuốn sách em mong muốn thư viện bổ sung. 
+          Thông tin đề xuất được bảo mật gửi riêng cho Thầy Cô Admin thư viện cấp 1 và cấp 2 để lên kế hoạch mua sắm.
+        </p>
+
+        <form id="bookRequestForm">
+          <div class="request-form-grid">
+            <label class="form-label">
+              Tên sách *
+              <input class="form-input" id="requestedTitle" required maxlength="160" placeholder="Tên cuốn sách em mong muốn">
+            </label>
+
+            <label class="form-label">
+              Tác giả (nếu biết)
+              <input class="form-input" id="requestedAuthor" maxlength="120" placeholder="Tên tác giả">
+            </label>
+
+            <label class="form-label">
+              Khối lớp
+              <select class="book-select" id="requestedGrade" style="margin: 6px 0 0;">
+                <option>Tiểu học</option>
+                <option>THCS</option>
+                <option>THPT</option>
+              </select>
+            </label>
+
+            <label class="form-label">
+              Thể loại
+              <select class="book-select" id="requestedGenre" style="margin: 6px 0 0;">
+                <option>Truyện / tiểu thuyết</option>
+                <option>Khoa học</option>
+                <option>Lịch sử</option>
+                <option>Kỹ năng sống</option>
+                <option>Thơ / văn học</option>
+                <option>Tiếng Anh</option>
+                <option>Truyện tranh</option>
+                <option>Khác</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="form-label" style="margin-top: 14px;">
+            Vì sao em muốn thư viện có cuốn sách này?
+            <textarea class="form-input" id="requestedReason" maxlength="700" placeholder="Ví dụ: Cuốn sách này rất lôi cuốn và có nhiều bài học bổ ích cho các bạn học sinh." style="height: 85px; resize: vertical;"></textarea>
+          </label>
+
+          <div class="reflection-actions">
+            <small id="requestStatus" style="color:var(--text-muted); font-size:0.78rem;">
+              🔒 Đề xuất được chuyển thẳng đến tài khoản Admin cấp 1 & 2. Không hiển thị công khai!
+            </small>
+            <button class="btn-primary" type="submit">Gửi đề xuất tới Admin 📚</button>
+          </div>
+        </form>
+
+        <!-- THÔNG BÁO BẢO MẬT: CHỈ ADMIN NẮM MỤC ĐỀ XUẤT SÁCH -->
+        <div class="privacy-notice-box" style="margin-top: 18px;">
+          <div class="privacy-notice-icon">🔒</div>
+          <div class="privacy-notice-text">
+            <b>Mục đề xuất sách được bảo mật hoàn toàn</b>
+            <p>Danh sách các tựa sách đề xuất không hiển thị công khai trên hệ thống mà chỉ hiển thị riêng trên tài khoản của Thầy/Cô Admin Cấp 1 (Admin Tổng) và Admin Cấp 2 để lên kế hoạch mua sắm và trang bị cho thư viện.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>© <strong>Sky-Line Virtual Library</strong> · Bản quyền hệ thống thư viện ảo · <a href="#" id="footerAdminLink" style="color:var(--primary-blue); text-decoration:none; font-weight:700;">Góc Quản Trị Viên</a></p>
+  </footer>
+
+  <!-- ==========================================
+       MODAL 1: LOGIN / ONBOARDING (HỌC SINH & ADMIN)
+       ========================================== -->
+  <div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width: 520px;">
+      <!-- TAB CHỌN ĐĂNG NHẬP DÀNH CHO 2 ĐỐI TƯỢNG -->
+      <div class="login-tabs">
+        <button class="login-tab-btn active" id="tabBtnStudentLogin" data-target="paneStudentLogin">
+          🎓 Dành Cho Học Sinh
+        </button>
+        <button class="login-tab-btn" id="tabBtnAdminLogin" data-target="paneAdminLogin">
+          👩‍🏫 Giáo Viên & Quản Trị
+        </button>
+      </div>
+
+      <!-- MỤC 1: ĐĂNG NHẬP HỌC SINH (BẢO MẬT NICKNAME & CƠ SỞ) -->
+      <div class="login-pane active" id="paneStudentLogin">
+        <h3 style="margin-bottom: 6px;">👋 Chào mừng em đến Thư viện ảo Sky-Line!</h3>
+        
+        <!-- THÔNG BÁO BẢO MẬT DANH TÍNH HỌC SINH -->
+        <div class="privacy-notice-box" style="margin: 10px 0 16px; padding: 12px 14px;">
+          <div class="privacy-notice-icon" style="font-size: 24px;">🔒</div>
+          <div class="privacy-notice-text">
+            <b>Bảo mật thông tin học sinh</b>
+            <p>Để đảm bảo quyền riêng tư, em chỉ cần nhập <strong>Biệt danh (Nickname)</strong> và chọn <strong>Cơ sở</strong> của mình để tích lũy ⭐ Ngôi sao thi đua nhận thưởng cuối tháng.</p>
+          </div>
+        </div>
+        
+        <label class="form-label" style="margin-bottom: 6px;">Chọn biểu tượng Avatar đại diện:</label>
+        <div class="avatar-selector" id="loginAvatarSelector">
+          <div class="avatar-choice selected" data-avatar="🪐">🪐</div>
+          <div class="avatar-choice" data-avatar="🌻">🌻</div>
+          <div class="avatar-choice" data-avatar="🚀">🚀</div>
+          <div class="avatar-choice" data-avatar="🌈">🌈</div>
+          <div class="avatar-choice" data-avatar="🦁">🦁</div>
+          <div class="avatar-choice" data-avatar="🦊">🦊</div>
+          <div class="avatar-choice" data-avatar="👑">👑</div>
+          <div class="avatar-choice" data-avatar="🦗">🦗</div>
+          <div class="avatar-choice" data-avatar="🦉">🦉</div>
+          <div class="avatar-choice" data-avatar="🎨">🎨</div>
+          <div class="avatar-choice" data-avatar="🔬">🔬</div>
+          <div class="avatar-choice" data-avatar="⚽">⚽</div>
+        </div>
+
+        <label class="form-label" for="loginNicknameInput">Nickname (Biệt danh của em) *</label>
+        <input type="text" id="loginNicknameInput" required maxlength="30" placeholder="Ví dụ: Thỏ Trắng, Sóc Nâu, Dế Mèn Nhí, Ken..." style="margin-bottom: 12px;">
+
+        <label class="form-label" for="loginCampusSelect">Chọn Cơ sở Sky-Line em đang học *</label>
+        <select class="campus-select" id="loginCampusSelect">
+          <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
+          <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
+          <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
+          <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
+          <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
+        </select>
+        
+        <div class="modal-actions" style="margin-top: 10px;">
+          <button class="btn-primary" id="btnSubmitStudentLogin" style="width: 100%; justify-content: center; padding: 13px;">
+            🚀 Bắt Đầu Đọc Sách & Tích Lũy ⭐
+          </button>
+        </div>
+      </div>
+
+      <!-- MỤC 2: ĐĂNG NHẬP GIÁO VIÊN & ADMIN TỔNG -->
+      <div class="login-pane" id="paneAdminLogin">
+        <h3 style="margin-bottom: 16px;">🔐 Cổng Đăng Nhập Giáo Viên & Admin</h3>
+
+        <label class="form-label" for="adminEmailInput">Email cá nhân Thầy/Cô hoặc Email Admin Tổng *</label>
+        <input type="email" id="adminEmailInput" placeholder="Ví dụ: quyenntn@skylineschool.edu.vn hoặc email cá nhân" style="margin-bottom: 12px;">
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 12px;">
+          <div>
+            <label class="form-label" for="teacherNameInput">Họ tên Thầy/Cô</label>
+            <input type="text" id="teacherNameInput" placeholder="Ví dụ: Cô Mai" style="margin-bottom: 0;">
+          </div>
+          <div>
+            <label class="form-label" for="teacherCampusSelect">Cơ sở công tác *</label>
+            <select class="campus-select" id="teacherCampusSelect" style="margin-bottom: 0; padding:10px 12px;">
+              <option value="Cơ sở 1">🏢 Cơ sở 1 (Riverside)</option>
+              <option value="Cơ sở 2">🏢 Cơ sở 2 (Central)</option>
+              <option value="Cơ sở 3">🏢 Cơ sở 3 (Global)</option>
+              <option value="Cơ sở 4">🏢 Cơ sở 4 (Hill)</option>
+              <option value="Cơ sở 5">🏢 Cơ sở 5 (Beach)</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="form-label" for="adminPasswordInput">Mật khẩu đăng nhập *</label>
+        <input type="password" id="adminPasswordInput" placeholder="Nhập mật khẩu" style="margin-bottom: 20px;">
+        
+        <div class="modal-actions">
+          <button class="btn-primary" id="btnSubmitAdminLogin" style="width: 100%; justify-content: center; padding: 13px;">
+            🔐 Đăng Nhập Hệ Thống
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: USER PROFILE & EDIT (NICKNAME & CƠ SỞ)
+       ========================================== -->
+  <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h3 id="modalTitle">👤 Hồ sơ độc giả Sky-Line</h3>
+      <p>Cập nhật biệt danh và cơ sở học tập của bạn trên hệ thống:</p>
+      
+      <label class="form-label" style="margin-bottom: 6px;">Biểu tượng đại diện:</label>
+      <div class="avatar-selector" id="editAvatarSelector">
+        <div class="avatar-choice" data-avatar="🪐">🪐</div>
+        <div class="avatar-choice" data-avatar="🌻">🌻</div>
+        <div class="avatar-choice" data-avatar="🚀">🚀</div>
+        <div class="avatar-choice" data-avatar="🌈">🌈</div>
+        <div class="avatar-choice" data-avatar="🦁">🦁</div>
+        <div class="avatar-choice" data-avatar="🦊">🦊</div>
+        <div class="avatar-choice" data-avatar="👑">👑</div>
+        <div class="avatar-choice" data-avatar="🦗">🦗</div>
+        <div class="avatar-choice" data-avatar="🦉">🦉</div>
+        <div class="avatar-choice" data-avatar="🎨">🎨</div>
+        <div class="avatar-choice" data-avatar="🔬">🔬</div>
+        <div class="avatar-choice" data-avatar="⚽">⚽</div>
+      </div>
+
+      <label class="form-label" for="studentNicknameEdit">Nickname của em:</label>
+      <input type="text" id="studentNicknameEdit" maxlength="30" placeholder="Biệt danh của em" style="margin-bottom: 12px;">
+
+      <label class="form-label" for="studentCampusEdit">Cơ sở Sky-Line đang học:</label>
+      <select class="campus-select" id="studentCampusEdit">
+        <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
+        <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
+        <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
+        <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
+        <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
+      </select>
+      
+      <div class="modal-actions">
+        <button class="btn-secondary" id="closeModal">Đóng</button>
+        <button class="btn-primary" id="saveName">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 3: ADMIN AUTHENTICATION
+       ========================================== -->
+  <div class="modal-backdrop" id="adminAuthModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>🔐 Xác thực Quản trị viên</h3>
+      <p>Vui lòng nhập mật khẩu quản trị để truy cập dữ liệu quản lý đề xuất sách và tổng hợp thi đua trao thưởng:</p>
+      
+      <label class="form-label" for="adminPassInput">Mật khẩu Quản trị:</label>
+      <input type="password" id="adminPassInput" placeholder="Nhập mật khẩu (Mặc định: skyline2026)" style="margin-bottom: 20px;">
+      
+      <div class="modal-actions">
+        <button class="btn-secondary" id="closeAdminAuth">Hủy</button>
+        <button class="btn-primary" id="btnAdminLogin">Xác nhận đăng nhập</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 4: ADMIN DASHBOARD (TỔNG HỢP SAO TRAO THƯỞNG & QUẢN LÝ ĐỀ XUẤT SÁCH)
+       ========================================== -->
+  <div class="modal-backdrop" id="adminDashboardModal" role="dialog" aria-modal="true">
+    <div class="modal modal-large">
+      <div class="admin-header-row">
+        <div>
+          <h3>🛡️ Bảng Điều Khiển Quản Trị Viên (Sky-Line Admin)</h3>
+          <p style="font-size: 0.85rem; color:var(--text-muted); margin: 4px 0 0;">
+            Quản lý dữ liệu chung toàn trường, tổng hợp thi đua ⭐ ngôi sao trao thưởng và quản lý đề xuất sách.
+          </p>
+        </div>
+        <button class="btn-secondary" id="closeAdminDashboard" style="padding: 6px 14px;">✕ Đóng</button>
+      </div>
+
+      <!-- THANH TRẠNG THÁI ADMIN & BỘ LỌC CƠ SỞ -->
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; background:var(--surface-subtle); padding:10px 16px; border-radius:var(--radius-md); border:1px solid var(--surface-border);">
+        <div class="admin-logged-in-pill">
+          <span>👤 Đang đăng nhập:</span>
+          <strong id="adminLoggedEmail">admintong.skyline@gmail.com</strong>
+          <span id="adminLoggedRole" class="badge-role-super">👑 Admin Tổng</span>
+          <span id="adminLoggedCampus" style="color:var(--text-muted); font-size:0.78rem;">· Tất cả cơ sở</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="adminCampusFilter" style="font-size:0.85rem; font-weight:700; color:var(--text-main);">🏢 Lọc theo Cơ sở:</label>
+          <select id="adminCampusFilter" class="campus-filter-select">
+            <option value="all">🌐 Tất cả 5 Cơ sở (Dữ liệu chung)</option>
+            <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
+            <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
+            <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
+            <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
+            <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- THÔNG BÁO GIÁO VIÊN ĐĂNG NHẬP (CHỈ ADMIN TỔNG THẤY) -->
+      <div id="adminTeacherAlertBanner" class="teacher-alert-banner" style="display:none;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size: 1.6rem;">🔔</span>
+          <div>
+            <b id="teacherAlertTitle" style="color: #b45309; font-size: 0.95rem;">Thông báo Giáo viên mới đăng nhập</b>
+            <p id="teacherAlertDesc" style="margin: 2px 0 0; font-size: 0.82rem; color: var(--text-main); line-height: 1.4;"></p>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button id="btnViewTeacherTab" class="btn-primary" style="padding: 7px 14px; font-size: 0.82rem; white-space: nowrap;">
+            👉 Xem & Chọn Cấp Quyền
+          </button>
+          <button id="btnDismissTeacherNotif" class="btn-secondary" style="padding: 7px 12px; font-size: 0.82rem;">
+            Đã xem
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI METRIC CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-num" id="kpiUniqueVisitors">0</div>
+          <div class="kpi-label">👥 Người truy cập duy nhất</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-num" id="kpiTotalVisits">0</div>
+          <div class="kpi-label">📈 Tổng lượt xem / truy cập</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-num" id="kpiTotalUsers">0</div>
+          <div class="kpi-label">🎓 Học sinh 5 cơ sở</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-num" id="kpiTotalTeachers">0</div>
+          <div class="kpi-label">👩‍🏫 Giáo viên đăng nhập</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-num" id="kpiInteractions">0</div>
+          <div class="kpi-label">📚 Đề xuất sách (Admin nắm)</div>
+        </div>
+      </div>
+
+      <!-- TAB BUTTONS (BAO GỒM PHÂN QUYỀN CHO ADMIN CẤP 2) -->
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="tabRewards">
+          🏆 Tổng Hợp Thi Đua Trao Thưởng (⭐)
+        </button>
+        <button class="admin-tab-btn" data-tab="tabReflections">
+          ✍️ Chấm Điểm Cảm Nhận Sách (1-5 ⭐) <span id="pendingReflectionsBadge" style="display:none; background:#f59e0b; color:#fff; font-size:0.72rem; padding:1px 6px; border-radius:10px; margin-left:4px;">0</span>
+        </button>
+        <button class="admin-tab-btn" data-tab="tabBookRequests">
+          📚 Quản Lý Đề Xuất Sách (Độc quyền Admin)
+        </button>
+        <button class="admin-tab-btn" data-tab="tabUsers">
+          👥 Danh Sách Học Sinh 5 Cơ Sở
+        </button>
+        <button class="admin-tab-btn" id="tabBtnSubAdmins" data-tab="tabSubAdmins" style="display:none;">
+          👑 Quản Lý Giáo Viên & Cấp Quyền Admin Cấp 2 <span id="teacherNotifBadge" style="display:none; background:#ef4444; color:#fff; font-size:0.72rem; padding:1px 6px; border-radius:10px; margin-left:4px;">0</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: TỔNG HỢP THI ĐUA TRAO THƯỞNG CUỐI THÁNG -->
+      <div class="admin-tab-pane active" id="tabRewards">
+        <div class="admin-toolbar">
+          <div>
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              🏆 Bảng xếp hạng Ngôi sao ⭐ trao thưởng cuối tháng
+            </h4>
+            <p style="font-size: 0.78rem; color:var(--text-muted); margin: 2px 0 0;">
+              Dựa trên tổng số sao học sinh tích lũy qua chơi trò chơi, viết review cảm nhận và đề xuất sách.
+            </p>
+          </div>
+          <button class="btn-primary" id="btnExportRewardsCSV" style="font-size:0.85rem;">
+            📥 Xuất Danh Sách Trao Thưởng (CSV)
+          </button>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Hạng</th>
+                <th>Danh hiệu khen thưởng</th>
+                <th>Học sinh</th>
+                <th>Cơ sở Sky-Line</th>
+                <th>⭐ Trò chơi</th>
+                <th>⭐ Review sách</th>
+                <th>⭐ Đề xuất sách</th>
+                <th>Tổng Ngôi Sao ⭐</th>
+              </tr>
+            </thead>
+            <tbody id="adminRewardsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: CHẤM ĐIỂM BÀI CẢM NHẬN & REVIEW SÁCH (1 - 5 ⭐) -->
+      <div class="admin-tab-pane" id="tabReflections">
+        <div class="admin-toolbar">
+          <div>
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              ✍️ Danh Sách Bài Cảm Nhận Của Học Sinh (<span id="reflectionsCountText">0</span> bài viết)
+            </h4>
+            <p style="font-size: 0.78rem; color:var(--text-muted); margin: 2px 0 0;">
+              Thầy/Cô đọc bài cảm nhận của học sinh (tối thiểu 50 từ) và trực tiếp chấm từ 1 đến 5 ⭐ Ngôi sao thi đua theo chất lượng bài viết.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" id="btnRefreshReflectionsTab" style="font-size:0.85rem;">🔄 Làm mới</button>
+            <button class="btn-primary" id="btnExportReflectionsCSV" style="font-size:0.85rem;">📥 Xuất CSV</button>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">STT</th>
+                <th>Học sinh</th>
+                <th>Cơ sở</th>
+                <th>Ngày gửi</th>
+                <th style="width: 70px;">Độ dài</th>
+                <th style="min-width: 280px;">Nội dung bài cảm nhận</th>
+                <th>Trạng thái</th>
+                <th style="min-width: 230px;">Thầy/Cô Chấm Điểm ⭐ (1-5)</th>
+              </tr>
+            </thead>
+            <tbody id="adminReflectionsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: QUẢN LÝ ĐỀ XUẤT SÁCH (ĐỘC QUYỀN ADMIN) -->
+      <div class="admin-tab-pane" id="tabBookRequests">
+        <div class="admin-toolbar">
+          <div>
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              📚 Danh sách đề xuất sách từ học sinh (<span id="bookRequestsCountText">0</span> yêu cầu)
+            </h4>
+            <p style="font-size: 0.78rem; color:var(--text-muted); margin: 2px 0 0;">
+              Chỉ tài khoản Admin nắm và duyệt các đề xuất này. Cập nhật trạng thái để phản hồi cho học sinh.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" id="btnRefreshRequestsTab" style="font-size:0.85rem;">🔄 Làm mới</button>
+            <button class="btn-primary" id="btnExportRequestsCSV" style="font-size:0.85rem;">
+              📥 Xuất Danh Sách Đề Xuất (CSV)
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">STT</th>
+                <th>Tựa sách đề xuất</th>
+                <th>Tác giả</th>
+                <th>Cơ sở</th>
+                <th>Thể loại</th>
+                <th>Học sinh đề xuất</th>
+                <th>Lý do muốn đọc</th>
+                <th>Ngày gửi</th>
+                <th>Trạng thái duyệt</th>
+              </tr>
+            </thead>
+            <tbody id="adminRequestsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: DANH SÁCH HỌC SINH 5 CƠ SỞ -->
+      <div class="admin-tab-pane" id="tabUsers">
+        <div class="admin-toolbar">
+          <div>
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              👥 Danh sách bạn đọc / học sinh (<span id="userCountText">0</span> tài khoản)
+            </h4>
+            <p style="font-size: 0.78rem; color:var(--text-muted); margin: 2px 0 0;">
+              Thống kê lượt truy cập, huy hiệu và số sao tích lũy của học sinh trên cả 5 cơ sở Sky-Line.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="adminSearchInput" placeholder="🔍 Tìm theo tên hoặc cơ sở..." style="padding:6px 12px; font-size:0.82rem; border-radius:var(--radius-sm); border:1px solid var(--surface-border); background:var(--surface); color:var(--text-main); width:200px;">
+            <button class="btn-secondary" id="btnExportUsersCSV" style="font-size:0.85rem;">📥 Xuất CSV</button>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">STT</th>
+                <th>Học sinh</th>
+                <th>Cơ sở</th>
+                <th>Tổng Sao ⭐</th>
+                <th>Huy hiệu</th>
+                <th>Thử thách</th>
+                <th>Số lượt truy cập</th>
+                <th>Lần đầu</th>
+                <th>Lần cuối</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: QUẢN LÝ GIÁO VIÊN & PHÂN QUYỀN ADMIN CẤP 2 (CHỈ ADMIN TỔNG CÓ QUYỀN) -->
+      <div class="admin-tab-pane" id="tabSubAdmins">
+        
+        <!-- BẢNG 1: GIÁO VIÊN ĐÃ ĐĂNG NHẬP & NÚT CHỌN LÀM ADMIN CẤP 2 -->
+        <div class="admin-toolbar" style="margin-bottom: 8px;">
+          <div>
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              👩‍🏫 Danh Sách Giáo Viên Đã Đăng Nhập Hệ Thống
+            </h4>
+            <p style="font-size: 0.78rem; color:var(--text-muted); margin: 2px 0 0;">
+              Khi giáo viên đăng nhập bằng email cá nhân, hệ thống tự động thông báo và Admin Tổng có nút bấm chọn cấp quyền Admin Cấp 2.
+            </p>
+          </div>
+          <button class="btn-secondary" id="btnRefreshTeachersList" style="font-size:0.85rem;">🔄 Làm mới danh sách</button>
+        </div>
+
+        <div class="admin-table-container" style="margin-bottom: 24px;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">STT</th>
+                <th>Email Giáo viên</th>
+                <th>Họ tên Giáo viên</th>
+                <th>Cơ sở công tác</th>
+                <th>Lần cuối đăng nhập</th>
+                <th>Vai trò hiện tại</th>
+                <th>Phân công Cơ sở</th>
+                <th>Thao tác Admin Tổng</th>
+              </tr>
+            </thead>
+            <tbody id="adminTeachersTableBody">
+              <!-- Dynamically populated from teachers.json -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- BẢNG 2: FORM CHỦ ĐỘNG SHARE QUYỀN CHO EMAIL MỚI -->
+        <div class="sub-admin-form-box">
+          <h4 style="font-size: 0.95rem; margin-top: 0; margin-bottom: 4px; color:var(--text-main);">
+            ➕ Hoặc Cấp Quyền Trực Tiếp Cho Giáo Viên Chưa Đăng Nhập
+          </h4>
+          <p style="font-size: 0.78rem; color:var(--text-muted); margin-bottom: 14px;">
+            Admin Tổng có thể chủ động nhập email cá nhân của Thầy/Cô để cấp trước quyền Admin Cấp 2.
+          </p>
+
+          <div class="sub-admin-form-grid">
+            <div>
+              <label class="form-label" for="subAdminEmail">Email Giáo viên *</label>
+              <input type="email" id="subAdminEmail" placeholder="Ví dụ: giaovien.cs1@gmail.com" required>
+            </div>
+            <div>
+              <label class="form-label" for="subAdminName">Họ tên Giáo viên *</label>
+              <input type="text" id="subAdminName" placeholder="Ví dụ: Cô Lan" required>
+            </div>
+            <div>
+              <label class="form-label" for="subAdminCampus">Phân công Cơ sở phụ trách *</label>
+              <select class="campus-select" id="subAdminCampus" style="margin-bottom:0; padding:10px 12px; font-size:0.85rem;">
+                <option value="Tất cả cơ sở">🌐 Tất cả 5 Cơ sở</option>
+                <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
+                <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
+                <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
+                <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
+                <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="subAdminPassword">Mật khẩu đăng nhập *</label>
+              <input type="password" id="subAdminPassword" placeholder="Mặc định: 123456" value="123456">
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btnSharePermission" style="font-size:0.85rem; padding:10px 18px;">
+            ➕ Cấp Quyền Admin Cấp 2
+          </button>
+        </div>
+
+        <!-- BẢNG 3: DANH SÁCH TÀI KHOẢN ADMIN ĐANG HOẠT ĐỘNG -->
+        <div class="admin-toolbar" style="margin-top: 24px;">
+          <div>
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              📋 Danh Sách Tài Khoản Quản Trị Hệ Thống (Admins)
+            </h4>
+            <p style="font-size: 0.78rem; color:var(--text-muted); margin: 2px 0 0;">
+              Chỉ Admin Tổng mới có thể thu hồi quyền của Admin cấp 2.
+            </p>
+          </div>
+          <button class="btn-secondary" id="btnRefreshAdminsList" style="font-size:0.85rem;">🔄 Làm mới</button>
+        </div>
+
+        <div class="admin-table-container" style="margin-bottom: 24px;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">STT</th>
+                <th>Tài khoản Email</th>
+                <th>Tên đại diện</th>
+                <th>Vai trò</th>
+                <th>Cơ sở phụ trách</th>
+                <th>Ngày cấp</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="adminSubAdminsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- BẢNG 4: NHẬT KÝ THÔNG BÁO GIÁO VIÊN ĐĂNG NHẬP -->
+        <div class="sub-admin-form-box" style="margin-bottom: 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="font-size: 0.95rem; margin: 0; color:var(--text-main);">
+              🔔 Nhật Ký Thông Báo Giáo Viên Đăng Nhập Gần Đây
+            </h4>
+            <button id="btnClearAllNotifs" class="btn-secondary" style="font-size:0.78rem; padding:4px 10px;">
+              Đánh dấu tất cả đã đọc
+            </button>
+          </div>
+          <div id="adminTeacherNotifsContainer" style="max-height:180px; overflow-y:auto; background:var(--surface); border-radius:var(--radius-sm); border:1px solid var(--surface-border);">
+            <!-- Dynamically populated notifications -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM ACTIONS -->
+      <div class="admin-actions-bar">
+        <small style="color:var(--text-muted); font-size:0.8rem;">
+          Dữ liệu được lưu trữ vĩnh viễn trên máy chủ tại <code>data/users.json</code> và <code>data/book-requests.json</code>.
+        </small>
+        <button class="btn-danger" id="btnAdminResetSystem" onclick="openResetConfirmModal()">
+          ⚠️ Reset toàn bộ dữ liệu về 0
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 4.5: RESET SYSTEM CONFIRMATION
+       ========================================== -->
+  <div class="modal-backdrop" id="resetConfirmModal" role="dialog" aria-modal="true" style="z-index: 2000;">
+    <div class="modal" style="max-width: 460px; text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+      <h3 style="color: #dc2626; margin-bottom: 8px;">Xác nhận Đặt lại Dữ liệu về 0</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 18px;">
+        Thao tác này sẽ đặt lại toàn bộ lượt truy cập, người dùng, điểm sao, thử thách và cảm nhận về 0. Thao tác này <strong>không thể hoàn tác</strong>!
+      </p>
+
+      <div style="text-align: left; margin-bottom: 20px;">
+        <label class="form-label" for="resetPassInput">Mật khẩu quản trị viên để xác nhận:</label>
+        <input type="password" id="resetPassInput" placeholder="Nhập mật khẩu quản trị (123456)..." style="margin-bottom: 4px;">
+        <div id="resetErrorMsg" style="color: #dc2626; font-size: 0.8rem; margin-top: 6px; display: none;"></div>
+      </div>
+
+      <div class="modal-actions" style="justify-content: center; gap: 12px;">
+        <button class="btn-secondary" id="btnCancelReset" onclick="closeResetConfirmModal()" style="padding: 10px 20px;">Hủy bỏ</button>
+        <button class="btn-danger" id="btnConfirmReset" onclick="handleConfirmReset()" style="padding: 10px 20px;">⚠️ Xác nhận Reset về 0</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 5: AI CONFIGURATION (GEMINI API KEY)
+       ========================================== -->
+  <div class="modal-backdrop" id="aiConfigModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>⚙️ Cấu hình Trí tuệ Nhân tạo (Gemini AI)</h3>
+      <p>
+        Nhập khóa <strong>Google Gemini API Key</strong> để nhân vật văn học có thể đàm đạo tự do và giải đáp chi tiết mọi câu hỏi phân tích, cảm nhận văn học nâng cao.
+      </p>
+      
+      <label class="form-label" for="geminiApiKeyInput">Google Gemini API Key:</label>
+      <input type="password" id="geminiApiKeyInput" placeholder="Ví dụ: AIzaSyB..." style="margin-bottom: 8px;">
+      
+      <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+        💡 <em>Mẹo:</em> Bạn có thể lấy khóa API hoàn toàn miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--primary-blue); font-weight:700;">Google AI Studio</a>. Nếu không có khóa, hệ thống vẫn tự động kích hoạt <strong>Bộ Tri thức Văn học Thông minh</strong> để phân tích nhân vật chính xác!
+      </div>
+
+      <div class="modal-actions" style="justify-content: space-between;">
+        <button class="btn-danger" id="btnClearApiKey" style="padding: 10px 14px;">Xóa khóa</button>
+        <div style="display:flex; gap: 8px;">
+          <button class="btn-secondary" id="closeAiConfig">Đóng</button>
+          <button class="btn-primary" id="btnSaveApiKey">Lưu & Kích hoạt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast" role="alert"></div>
+
+  <!-- MAIN SCRIPT -->
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -447,31 +447,71 @@
        ========================================== -->
   <div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true">
     <div class="modal" style="max-width: 520px;">
-      <!-- TAB CHỌN ĐĂNG NHẬP DÀNH CHO 2 ĐỐI TƯỢNG -->
+      <!-- TAB CHỌN ĐĂNG NHẬP DÀNH CHO 3 ĐỐI TƯỢNG -->
       <div class="login-tabs">
         <button class="login-tab-btn active" id="tabBtnStudentLogin" data-target="paneStudentLogin">
-          🎓 Dành Cho Học Sinh
+          🔑 Học sinh đăng nhập
+        </button>
+        <button class="login-tab-btn" id="tabBtnStudentRegister" data-target="paneStudentRegister">
+          ✨ Học sinh đăng kí mới
         </button>
         <button class="login-tab-btn" id="tabBtnAdminLogin" data-target="paneAdminLogin">
-          👩‍🏫 Giáo Viên & Quản Trị
+          🛡️ Quản trị viên
         </button>
       </div>
 
-      <!-- MỤC 1: ĐĂNG NHẬP HỌC SINH (BẢO MẬT NICKNAME & MÃ PIN CÁ NHÂN) -->
+      <!-- MỤC 1: HỌC SINH ĐĂNG NHẬP -->
       <div class="login-pane active" id="paneStudentLogin">
-        <h3 style="margin-bottom: 6px;">👋 Chào mừng em đến Thư viện ảo Sky-Line!</h3>
+        <h3 style="margin-bottom: 6px;">👋 Học Sinh Đăng Nhập</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;">
+          Nhập đúng Biệt danh và Mã PIN đã đặt trước đó để vào lại tài khoản của em.
+        </p>
+
+        <label class="form-label" for="loginNicknameInput">Biệt danh / Họ tên học sinh *</label>
+        <input type="text" id="loginNicknameInput" required maxlength="30" placeholder="Ví dụ: Minh Khang, Thỏ Trắng, Ken..." style="margin-bottom: 12px;">
+
+        <label class="form-label" for="loginPinInput">Mã PIN bảo mật cá nhân *</label>
+        <div style="position: relative; margin-bottom: 12px;">
+          <input type="password" id="loginPinInput" required maxlength="10" placeholder="Nhập mã PIN (4 - 6 số) của em..." style="margin-bottom: 0; padding-right: 42px;">
+          <span id="toggleLoginPinVisibility" title="Hiện/Ẩn mã PIN" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none;">👁️</span>
+        </div>
+
+        <label class="form-label" for="loginCampusSelect">Chọn Cơ sở Sky-Line em đang học *</label>
+        <select class="campus-select" id="loginCampusSelect" style="margin-bottom: 14px;">
+          <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
+          <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
+          <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
+          <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
+          <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
+        </select>
+
+        <div id="loginStudentErrorMsg" style="color: #b91c1c; font-size: 0.82rem; margin-top: -4px; margin-bottom: 14px; display: none; line-height: 1.4; background: #fee2e2; padding: 10px 12px; border-radius: 6px; border: 1px solid #fca5a5;"></div>
+
+        <div class="modal-actions" style="margin-top: 10px;">
+          <button class="btn-primary" id="btnSubmitStudentLogin" style="width: 100%; justify-content: center; padding: 13px;">
+            🚀 Đăng Nhập & Tiếp Tục Đọc Sách
+          </button>
+        </div>
+
+        <div style="text-align:center; margin-top:14px; font-size:0.84rem; color:var(--text-muted);">
+          Em là học sinh mới? <a href="#" id="linkSwitchToRegister" style="color:var(--primary-blue); font-weight:700; text-decoration:underline;">Bấm vào đây để Đăng kí mới ✨</a>
+        </div>
+      </div>
+
+      <!-- MỤC 2: HỌC SINH ĐĂNG KÍ MỚI -->
+      <div class="login-pane" id="paneStudentRegister">
+        <h3 style="margin-bottom: 6px;">✨ Học Sinh Đăng Kí Mới</h3>
         
-        <!-- THÔNG BÁO BẢO MẬT DANH TÍNH HỌC SINH -->
-        <div class="privacy-notice-box" style="margin: 10px 0 16px; padding: 12px 14px;">
-          <div class="privacy-notice-icon" style="font-size: 24px;">🔑</div>
+        <div class="privacy-notice-box" style="margin: 10px 0 14px; padding: 10px 12px;">
+          <div class="privacy-notice-icon" style="font-size: 20px;">🛡️</div>
           <div class="privacy-notice-text">
-            <b>Tài khoản vĩnh viễn & Bảo vệ điểm ⭐</b>
-            <p>Em nhập <strong>Biệt danh</strong> và đặt <strong>Mã PIN (4-6 số)</strong> bí mật. Lần sau ở bất kỳ máy nào, chỉ cần nhập lại đúng Tên + Mã PIN để tiếp tục tích lũy sao và nhận quà cuối tháng!</p>
+            <b>Tạo tài khoản độc giả vĩnh viễn</b>
+            <p>Hệ thống tự động kiểm tra để tránh trùng tên với bạn khác trong trường. Hãy đặt Mã PIN bí mật để dùng mãi mãi nhé!</p>
           </div>
         </div>
-        
-        <label class="form-label" style="margin-bottom: 6px;">Chọn biểu tượng Avatar đại diện:</label>
-        <div class="avatar-selector" id="loginAvatarSelector">
+
+        <label class="form-label" style="margin-bottom: 6px;">Chọn Avatar đại diện:</label>
+        <div class="avatar-selector" id="registerAvatarSelector">
           <div class="avatar-choice selected" data-avatar="🪐">🪐</div>
           <div class="avatar-choice" data-avatar="🌻">🌻</div>
           <div class="avatar-choice" data-avatar="🚀">🚀</div>
@@ -486,34 +526,46 @@
           <div class="avatar-choice" data-avatar="⚽">⚽</div>
         </div>
 
-        <label class="form-label" for="loginNicknameInput">Nickname (Biệt danh của em) *</label>
-        <input type="text" id="loginNicknameInput" required maxlength="30" placeholder="Ví dụ: Thỏ Trắng, Minh Khang, Dế Mèn Nhí, Ken..." style="margin-bottom: 12px;">
-
-        <label class="form-label" for="loginPinInput">Mã PIN cá nhân (4 - 6 số) *</label>
-        <div style="position: relative; margin-bottom: 12px;">
-          <input type="password" id="loginPinInput" required maxlength="10" placeholder="Ví dụ: 2014, 1234 (Hãy nhớ mã này để đăng nhập lại)..." style="margin-bottom: 0; padding-right: 42px;">
-          <span id="togglePinVisibility" title="Hiện/Ẩn mã PIN" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none;">👁️</span>
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom: 12px;">
+          <div>
+            <label class="form-label" for="registerNicknameInput">Biệt danh / Họ tên học sinh *</label>
+            <input type="text" id="registerNicknameInput" required maxlength="30" placeholder="Ví dụ: Minh Khang, Ken..." style="margin-bottom: 0;">
+          </div>
+          <div>
+            <label class="form-label" for="registerClassInput">Lớp học *</label>
+            <input type="text" id="registerClassInput" required maxlength="15" placeholder="VD: 3/1, 5A..." style="margin-bottom: 0;">
+          </div>
         </div>
 
-        <div id="loginStudentErrorMsg" style="color: #b91c1c; font-size: 0.82rem; margin-top: -4px; margin-bottom: 12px; display: none; line-height: 1.4; background: #fee2e2; padding: 8px 12px; border-radius: 6px; border: 1px solid #fca5a5;"></div>
+        <label class="form-label" for="registerPinInput">Đặt Mã PIN cá nhân (4 - 6 số) *</label>
+        <div style="position: relative; margin-bottom: 12px;">
+          <input type="password" id="registerPinInput" required maxlength="10" placeholder="Ví dụ: 2014, 1234 (Hãy nhớ mã này để đăng nhập lại)..." style="margin-bottom: 0; padding-right: 42px;">
+          <span id="toggleRegisterPinVisibility" title="Hiện/Ẩn mã PIN" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none;">👁️</span>
+        </div>
 
-        <label class="form-label" for="loginCampusSelect">Chọn Cơ sở Sky-Line em đang học *</label>
-        <select class="campus-select" id="loginCampusSelect">
+        <label class="form-label" for="registerCampusSelect">Chọn Cơ sở Sky-Line em đang học *</label>
+        <select class="campus-select" id="registerCampusSelect" style="margin-bottom: 14px;">
           <option value="Cơ sở 1">🏢 Cơ sở 1 (Sky-Line Riverside)</option>
           <option value="Cơ sở 2">🏢 Cơ sở 2 (Sky-Line Central)</option>
           <option value="Cơ sở 3">🏢 Cơ sở 3 (Sky-Line Global)</option>
           <option value="Cơ sở 4">🏢 Cơ sở 4 (Sky-Line Hill)</option>
           <option value="Cơ sở 5">🏢 Cơ sở 5 (Sky-Line Beach)</option>
         </select>
-        
+
+        <div id="registerStudentErrorMsg" style="color: #b91c1c; font-size: 0.82rem; margin-top: -4px; margin-bottom: 14px; display: none; line-height: 1.4; background: #fee2e2; padding: 10px 12px; border-radius: 6px; border: 1px solid #fca5a5;"></div>
+
         <div class="modal-actions" style="margin-top: 10px;">
-          <button class="btn-primary" id="btnSubmitStudentLogin" style="width: 100%; justify-content: center; padding: 13px;">
-            🚀 Bắt Đầu Đọc Sách & Tích Lũy ⭐
+          <button class="btn-primary" id="btnSubmitStudentRegister" style="width: 100%; justify-content: center; padding: 13px; background: linear-gradient(135deg, #10b981, #059669);">
+            ✨ Tạo Tài Khoản Mới & Bắt Đầu
           </button>
+        </div>
+
+        <div style="text-align:center; margin-top:14px; font-size:0.84rem; color:var(--text-muted);">
+          Em đã có tài khoản rồi? <a href="#" id="linkSwitchToLogin" style="color:var(--primary-blue); font-weight:700; text-decoration:underline;">Bấm vào đây để Đăng nhập 🔑</a>
         </div>
       </div>
 
-      <!-- MỤC 2: ĐĂNG NHẬP GIÁO VIÊN & ADMIN TỔNG -->
+      <!-- MỤC 3: ĐĂNG NHẬP GIÁO VIÊN & ADMIN TỔNG -->
       <div class="login-pane" id="paneAdminLogin">
         <h3 style="margin-bottom: 16px;">🔐 Cổng Đăng Nhập Giáo Viên & Admin</h3>
 

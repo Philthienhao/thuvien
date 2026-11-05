@@ -888,6 +888,114 @@ async function handleStudentLogin(nickname, pin, campus, avatar) {
   }
 }
 
+async function handleStudentRegister(nickname, studentClass, pin, campus, avatar) {
+  const errBox = document.getElementById("registerStudentErrorMsg");
+  if (errBox) {
+    errBox.style.display = "none";
+    errBox.textContent = "";
+  }
+
+  const cleanNickname = (nickname || "").trim();
+  const cleanClass = (studentClass || "").trim();
+  const cleanPin = (pin || "").trim();
+  const cleanCampus = campus || "Cơ sở 1";
+  const cleanAvatar = avatar || "🪐";
+
+  if (!cleanNickname) {
+    if (errBox) {
+      errBox.textContent = "Vui lòng nhập Biệt danh / Họ tên học sinh!";
+      errBox.style.display = "block";
+    }
+    toast("Vui lòng nhập Biệt danh / Họ tên!");
+    return;
+  }
+
+  if (!cleanClass) {
+    if (errBox) {
+      errBox.textContent = "Vui lòng nhập Lớp học của em (ví dụ: 3/1, 5A, 6/2...)!";
+      errBox.style.display = "block";
+    }
+    toast("Vui lòng nhập Lớp học của em!");
+    return;
+  }
+
+  if (!cleanPin || cleanPin.length < 4) {
+    if (errBox) {
+      errBox.textContent = "Vui lòng đặt Mã PIN cá nhân từ 4 - 6 số (ví dụ: 1234, 2014) để bảo vệ tài khoản!";
+      errBox.style.display = "block";
+    }
+    toast("Mã PIN cần tối thiểu 4 số!");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/auth/student-register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nickname: cleanNickname,
+        studentClass: cleanClass,
+        pin: cleanPin,
+        campus: cleanCampus,
+        avatar: cleanAvatar,
+        visitorId
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      const errorMsg = data.error || "Không thể đăng ký tài khoản";
+      if (errBox) {
+        errBox.textContent = errorMsg;
+        errBox.style.display = "block";
+      }
+      toast(errorMsg);
+      playSound('wrong');
+      return;
+    }
+
+    playSound('fanfare');
+    const u = data.user;
+    currentUserId = u.id;
+    studentNickname = u.nickname || u.name || cleanNickname;
+    studentPin = cleanPin;
+    studentName = studentNickname;
+    studentCampus = u.campus || cleanCampus;
+    studentClass = u.studentClass || cleanClass;
+    studentAvatar = u.avatar || cleanAvatar;
+    totalStars = 0;
+    totalPoints = 0;
+    quizStars = 0;
+    reviewStars = 0;
+    requestStars = 0;
+    badges = 0;
+    completedChallenges = 0;
+    readingStreak = 1;
+
+    localStorage.setItem(STORAGE_KEYS.USER_ID, currentUserId);
+    localStorage.setItem(STORAGE_KEYS.NICKNAME, studentNickname);
+    localStorage.setItem(STORAGE_KEYS.NAME, studentNickname);
+    localStorage.setItem(STORAGE_KEYS.PIN, cleanPin);
+    localStorage.setItem(STORAGE_KEYS.CAMPUS, studentCampus);
+    localStorage.setItem(STORAGE_KEYS.CLASS, studentClass);
+
+    updateProfileUI();
+    hideLoginModal();
+
+    toast(`🎉 Chúc mừng ${studentNickname} (${studentClass} - ${studentCampus}) đã tạo tài khoản thành công!`);
+    refreshLeaderboard();
+    recordVisitOnServer();
+    refreshBookRequests();
+
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = "Lỗi kết nối máy chủ: " + err.message;
+      errBox.style.display = "block";
+    }
+    toast("Lỗi kết nối: " + err.message);
+  }
+}
+
 async function handleAdminLogin(email, password, teacherName, teacherCampus) {
   if (!email || !email.trim()) {
     toast("Vui lòng nhập Email!");
@@ -2702,37 +2810,62 @@ function initTheme() {
 }
 
 function initModals() {
-  // Login Tab Switching (Học sinh vs Quản trị viên)
+  // Login Tab Switching (3 nút: Học sinh đăng nhập - Học sinh đăng kí mới - Quản trị viên)
   const tabBtnStudentLogin = document.getElementById("tabBtnStudentLogin");
+  const tabBtnStudentRegister = document.getElementById("tabBtnStudentRegister");
   const tabBtnAdminLogin = document.getElementById("tabBtnAdminLogin");
   const paneStudentLogin = document.getElementById("paneStudentLogin");
+  const paneStudentRegister = document.getElementById("paneStudentRegister");
   const paneAdminLogin = document.getElementById("paneAdminLogin");
 
-  if (tabBtnStudentLogin && tabBtnAdminLogin) {
-    tabBtnStudentLogin.addEventListener("click", () => {
-      playSound('click');
-      tabBtnStudentLogin.classList.add("active");
-      tabBtnAdminLogin.classList.remove("active");
-      if (paneStudentLogin) paneStudentLogin.classList.add("active");
-      if (paneAdminLogin) paneAdminLogin.classList.remove("active");
-    });
+  const switchLoginTab = (target) => {
+    playSound('click');
+    [tabBtnStudentLogin, tabBtnStudentRegister, tabBtnAdminLogin].forEach(b => { if (b) b.classList.remove("active"); });
+    [paneStudentLogin, paneStudentRegister, paneAdminLogin].forEach(p => { if (p) p.classList.remove("active"); });
 
-    tabBtnAdminLogin.addEventListener("click", () => {
-      playSound('click');
-      tabBtnAdminLogin.classList.add("active");
-      tabBtnStudentLogin.classList.remove("active");
+    if (target === 'login') {
+      if (tabBtnStudentLogin) tabBtnStudentLogin.classList.add("active");
+      if (paneStudentLogin) paneStudentLogin.classList.add("active");
+      const nickInput = document.getElementById("loginNicknameInput");
+      if (nickInput) setTimeout(() => nickInput.focus(), 100);
+    } else if (target === 'register') {
+      if (tabBtnStudentRegister) tabBtnStudentRegister.classList.add("active");
+      if (paneStudentRegister) paneStudentRegister.classList.add("active");
+      const regNickInput = document.getElementById("registerNicknameInput");
+      if (regNickInput) setTimeout(() => regNickInput.focus(), 100);
+    } else if (target === 'admin') {
+      if (tabBtnAdminLogin) tabBtnAdminLogin.classList.add("active");
       if (paneAdminLogin) paneAdminLogin.classList.add("active");
-      if (paneStudentLogin) paneStudentLogin.classList.remove("active");
+    }
+  };
+
+  if (tabBtnStudentLogin) tabBtnStudentLogin.addEventListener("click", () => switchLoginTab('login'));
+  if (tabBtnStudentRegister) tabBtnStudentRegister.addEventListener("click", () => switchLoginTab('register'));
+  if (tabBtnAdminLogin) tabBtnAdminLogin.addEventListener("click", () => switchLoginTab('admin'));
+
+  const linkSwitchToRegister = document.getElementById("linkSwitchToRegister");
+  if (linkSwitchToRegister) {
+    linkSwitchToRegister.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchLoginTab('register');
     });
   }
 
-  // Login Avatar Choices
-  let selectedLoginAvatar = "🪐";
-  document.querySelectorAll("#loginAvatarSelector .avatar-choice").forEach(ch => {
+  const linkSwitchToLogin = document.getElementById("linkSwitchToLogin");
+  if (linkSwitchToLogin) {
+    linkSwitchToLogin.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchLoginTab('login');
+    });
+  }
+
+  // Register Avatar Choices
+  let selectedRegisterAvatar = "🪐";
+  document.querySelectorAll("#registerAvatarSelector .avatar-choice").forEach(ch => {
     ch.addEventListener("click", () => {
       playSound('click');
-      selectedLoginAvatar = ch.dataset.avatar;
-      document.querySelectorAll("#loginAvatarSelector .avatar-choice").forEach(c => c.classList.remove("selected"));
+      selectedRegisterAvatar = ch.dataset.avatar;
+      document.querySelectorAll("#registerAvatarSelector .avatar-choice").forEach(c => c.classList.remove("selected"));
       ch.classList.add("selected");
     });
   });
@@ -2746,7 +2879,7 @@ function initModals() {
       nickInput ? nickInput.value : "",
       pinInput ? pinInput.value : "",
       campusSelect ? campusSelect.value : "Cơ sở 1",
-      selectedLoginAvatar
+      studentAvatar || "🪐"
     );
   };
 
@@ -2772,12 +2905,66 @@ function initModals() {
     });
   }
 
-  const togglePinBtn = document.getElementById("togglePinVisibility");
-  if (togglePinBtn && loginPinInput) {
-    togglePinBtn.addEventListener("click", () => {
+  const toggleLoginPinBtn = document.getElementById("toggleLoginPinVisibility");
+  if (toggleLoginPinBtn && loginPinInput) {
+    toggleLoginPinBtn.addEventListener("click", () => {
       const isPass = loginPinInput.type === "password";
       loginPinInput.type = isPass ? "text" : "password";
-      togglePinBtn.textContent = isPass ? "🙈" : "👁️";
+      toggleLoginPinBtn.textContent = isPass ? "🙈" : "👁️";
+    });
+  }
+
+  // Submit Student Register (Nickname, Lớp, PIN, Cơ sở, Avatar)
+  const triggerStudentRegister = () => {
+    const regNickInput = document.getElementById("registerNicknameInput");
+    const regClassInput = document.getElementById("registerClassInput");
+    const regPinInput = document.getElementById("registerPinInput");
+    const regCampusSelect = document.getElementById("registerCampusSelect");
+
+    handleStudentRegister(
+      regNickInput ? regNickInput.value : "",
+      regClassInput ? regClassInput.value : "",
+      regPinInput ? regPinInput.value : "",
+      regCampusSelect ? regCampusSelect.value : "Cơ sở 1",
+      selectedRegisterAvatar
+    );
+  };
+
+  const btnSubmitStudentRegister = document.getElementById("btnSubmitStudentRegister");
+  if (btnSubmitStudentRegister) {
+    btnSubmitStudentRegister.addEventListener("click", triggerStudentRegister);
+  }
+
+  const registerPinInput = document.getElementById("registerPinInput");
+  if (registerPinInput) {
+    registerPinInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") triggerStudentRegister();
+    });
+  }
+
+  const registerNicknameInput = document.getElementById("registerNicknameInput");
+  const registerClassInput = document.getElementById("registerClassInput");
+  if (registerNicknameInput) {
+    registerNicknameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (registerClassInput) registerClassInput.focus();
+      }
+    });
+  }
+  if (registerClassInput) {
+    registerClassInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (registerPinInput) registerPinInput.focus();
+      }
+    });
+  }
+
+  const toggleRegisterPinBtn = document.getElementById("toggleRegisterPinVisibility");
+  if (toggleRegisterPinBtn && registerPinInput) {
+    toggleRegisterPinBtn.addEventListener("click", () => {
+      const isPass = registerPinInput.type === "password";
+      registerPinInput.type = isPass ? "text" : "password";
+      toggleRegisterPinBtn.textContent = isPass ? "🙈" : "👁️";
     });
   }
 

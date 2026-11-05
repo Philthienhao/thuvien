@@ -353,18 +353,20 @@ async function handleRequest(req, res) {
   // ==========================================
   // API: STUDENT LOGIN (NICKNAME & CƠ SỞ BẢO MẬT)
   // ==========================================
-  if ((pathname === '/api/auth/student-login' || pathname === '/api/auth/login') && req.method === 'POST') {
+  // API: HỌC SINH ĐĂNG NHẬP (DÀNH CHO TÀI KHOẢN ĐÃ CÓ)
+  // ==========================================
+  if (pathname === '/api/auth/student-login' && req.method === 'POST') {
     try {
-      const { nickname, name, pin, password, campus, studentClass, avatar, visitorId } = await parseRequestBody(req);
+      const { nickname, name, pin, password, campus, studentClass, visitorId } = await parseRequestBody(req);
       const cleanNickname = (nickname || name || '').trim();
       const cleanPin = (pin || password || '').trim();
 
       if (!cleanNickname) {
-        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Biệt danh (Nickname) của em' });
+        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Biệt danh / Họ tên của em' });
         return;
       }
-      if (!cleanPin || cleanPin.length < 4) {
-        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Mã PIN cá nhân tối thiểu 4 số (ví dụ: 1234, 2014) để bảo vệ tài khoản của em!' });
+      if (!cleanPin) {
+        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Mã PIN cá nhân để đăng nhập' });
         return;
       }
 
@@ -373,67 +375,120 @@ async function handleRequest(req, res) {
       if (!VALID_CAMPUSES.includes(cleanCampus)) {
         cleanCampus = 'Cơ sở 1';
       }
-      const cleanAvatar = avatar || '🪐';
       const now = new Date().toISOString();
 
       let user = await db.findUser(cleanNickname, cleanCampus);
       if (!user) {
-        user = {
-          id: 'u_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-          visitorId: visitorId || null,
-          name: cleanNickname,
-          nickname: cleanNickname,
-          pin: cleanPin,
-          campus: cleanCampus,
-          studentClass: cleanCampus,
-          avatar: cleanAvatar,
-          stars: 0,
-          points: 0,
-          quizStars: 0,
-          reviewStars: 0,
-          requestStars: 0,
-          badges: 0,
-          challenges: 0,
-          streak: 1,
-          firstLogin: now,
-          lastLogin: now,
-          visitCount: 1,
-          lastActivity: now
-        };
-      } else {
-        // Kiểm tra mã PIN bảo vệ tài khoản
-        if (user.pin && user.pin !== cleanPin) {
-          sendJSON(res, 401, {
-            success: false,
-            error: `Mã PIN không đúng cho tài khoản "${cleanNickname}" (${cleanCampus})! Nếu đây là tên của em, vui lòng nhập lại đúng mã PIN đã đặt trước đó. Hoặc em hãy thêm số/ký tự khác vào Biệt danh để tạo tài khoản mới nếu chưa từng đăng ký nhé!`
-          });
-          return;
-        }
-
-        // Nếu tài khoản cũ chưa có mã PIN thì cập nhật mã PIN lần đầu
-        if (!user.pin) {
-          user.pin = cleanPin;
-        }
-
-        user.lastLogin = now;
-        user.visitCount = (user.visitCount || 1) + 1;
-        user.avatar = cleanAvatar;
-        user.nickname = cleanNickname;
-        user.campus = cleanCampus;
-        user.studentClass = cleanCampus;
-        if (typeof user.stars !== 'number') user.stars = user.points || 0;
-        if (typeof user.quizStars !== 'number') user.quizStars = 0;
-        if (typeof user.reviewStars !== 'number') user.reviewStars = 0;
-        if (typeof user.requestStars !== 'number') user.requestStars = 0;
-        if (visitorId) user.visitorId = visitorId;
-        user.lastActivity = now;
+        sendJSON(res, 404, { 
+          success: false, 
+          error: `Không tìm thấy tài khoản "${cleanNickname}" tại ${cleanCampus}! Nếu em là học sinh mới, vui lòng bấm tab "✨ Học sinh đăng kí mới" để tạo tài khoản nhé!` 
+        });
+        return;
       }
+
+      // Kiểm tra mã PIN bảo vệ tài khoản
+      if (user.pin && user.pin !== cleanPin) {
+        sendJSON(res, 401, {
+          success: false,
+          error: `Mã PIN không chính xác cho tài khoản "${cleanNickname}" (${cleanCampus})! Vui lòng kiểm tra lại hoặc nhờ Thầy/Cô Admin xem lại mã PIN giúp em nhé!`
+        });
+        return;
+      }
+
+      if (!user.pin) {
+        user.pin = cleanPin;
+      }
+
+      user.lastLogin = now;
+      user.visitCount = (user.visitCount || 1) + 1;
+      if (typeof user.stars !== 'number') user.stars = user.points || 0;
+      if (typeof user.quizStars !== 'number') user.quizStars = 0;
+      if (typeof user.reviewStars !== 'number') user.reviewStars = 0;
+      if (typeof user.requestStars !== 'number') user.requestStars = 0;
+      if (visitorId) user.visitorId = visitorId;
+      user.lastActivity = now;
 
       await db.saveUser(user);
 
       if (visitorId) {
         const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-        await db.recordVisit({ visitorId, studentName: cleanNickname, studentClass: cleanCampus, avatar: cleanAvatar, ip });
+        await db.recordVisit({ visitorId, studentName: cleanNickname, studentClass: user.studentClass || cleanCampus, avatar: user.avatar, ip });
+      }
+
+      const analytics = await db.getAnalytics();
+      sendJSON(res, 200, { success: true, user, analytics });
+      return;
+    } catch (err) {
+      sendJSON(res, 400, { success: false, error: err.message });
+      return;
+    }
+  }
+
+  // ==========================================
+  // API: HỌC SINH ĐĂNG KÍ MỚI (CHẶN BÁO TRÙNG TÊN & CẤP MÃ PIN)
+  // ==========================================
+  if ((pathname === '/api/auth/student-register' || pathname === '/api/auth/register') && req.method === 'POST') {
+    try {
+      const { nickname, name, pin, password, campus, studentClass, avatar, visitorId } = await parseRequestBody(req);
+      const cleanNickname = (nickname || name || '').trim();
+      const cleanPin = (pin || password || '').trim();
+      const cleanClass = (studentClass || '').trim();
+
+      if (!cleanNickname) {
+        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Biệt danh / Họ tên học sinh' });
+        return;
+      }
+      if (!cleanPin || cleanPin.length < 4) {
+        sendJSON(res, 400, { success: false, error: 'Vui lòng đặt Mã PIN cá nhân tối thiểu 4 số (ví dụ: 1234, 2014) để bảo vệ tài khoản!' });
+        return;
+      }
+
+      const VALID_CAMPUSES = ['Cơ sở 1', 'Cơ sở 2', 'Cơ sở 3', 'Cơ sở 4', 'Cơ sở 5'];
+      let cleanCampus = (campus || 'Cơ sở 1').trim();
+      if (!VALID_CAMPUSES.includes(cleanCampus)) {
+        cleanCampus = 'Cơ sở 1';
+      }
+      const cleanAvatar = avatar || '🪐';
+      const now = new Date().toISOString();
+
+      // KIỂM TRA TRÙNG TÊN TRONG CÙNG CƠ SỞ
+      let existingUser = await db.findUser(cleanNickname, cleanCampus);
+      if (existingUser) {
+        sendJSON(res, 409, {
+          success: false,
+          error: `⚠️ Biệt danh "${cleanNickname}" đã có bạn đăng ký tại ${cleanCampus}! Để không bị trùng lẫn tài khoản và điểm số nhận quà, em vui lòng thêm Tên lớp hoặc Chữ lót (Ví dụ: "${cleanNickname} ${cleanClass || '4A'}", "Nguyễn ${cleanNickname}...") nhé!`
+        });
+        return;
+      }
+
+      const newUser = {
+        id: 'u_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+        visitorId: visitorId || null,
+        name: cleanNickname,
+        nickname: cleanNickname,
+        studentClass: cleanClass || cleanCampus,
+        pin: cleanPin,
+        campus: cleanCampus,
+        avatar: cleanAvatar,
+        stars: 0,
+        points: 0,
+        quizStars: 0,
+        reviewStars: 0,
+        requestStars: 0,
+        badges: 0,
+        challenges: 0,
+        streak: 1,
+        firstLogin: now,
+        lastLogin: now,
+        visitCount: 1,
+        lastActivity: now
+      };
+
+      await db.saveUser(newUser);
+
+      if (visitorId) {
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+        await db.recordVisit({ visitorId, studentName: cleanNickname, studentClass: cleanClass || cleanCampus, avatar: cleanAvatar, ip });
       }
 
       const users = await db.getUsers();
@@ -443,7 +498,7 @@ async function handleRequest(req, res) {
       });
 
       const analytics = await db.getAnalytics();
-      sendJSON(res, 200, { success: true, user, analytics });
+      sendJSON(res, 200, { success: true, user: newUser, analytics });
       return;
     } catch (err) {
       sendJSON(res, 400, { success: false, error: err.message });

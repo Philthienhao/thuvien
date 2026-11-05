@@ -166,10 +166,7 @@
           <div class="chat-top">
             <span class="online-dot"></span>
             <span id="chatTitle">Dế Mèn · Người bạn văn học</span>
-            <button class="small-link" id="btnConfigAI" style="margin-left:auto; font-size:0.75rem; padding:4px 10px; display:flex; align-items:center; gap:4px;" title="Cài đặt Google Gemini API Key">
-              ⚙️ Cài đặt AI
-            </button>
-            <span class="ai-status-indicator" id="aiStatus" style="font-size:0.75rem;">● Tri thức Văn học</span>
+            <span class="ai-status-indicator" id="aiStatus" style="margin-left:auto; font-size:0.75rem;">● Tri thức Văn học</span>
           </div>
 
           <div class="chat-messages" id="chatMessages" aria-live="polite">
@@ -1078,32 +1075,7 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 5: AI CONFIGURATION (GEMINI API KEY)
-       ========================================== -->
-  <div class="modal-backdrop" id="aiConfigModal" role="dialog" aria-modal="true">
-    <div class="modal">
-      <h3>⚙️ Cấu hình Trí tuệ Nhân tạo (Gemini AI)</h3>
-      <p>
-        Nhập khóa <strong>Google Gemini API Key</strong> để nhân vật văn học có thể đàm đạo tự do và giải đáp chi tiết mọi câu hỏi phân tích, cảm nhận văn học nâng cao.
-      </p>
-      
-      <label class="form-label" for="geminiApiKeyInput">Google Gemini API Key:</label>
-      <input type="password" id="geminiApiKeyInput" placeholder="Ví dụ: AIzaSyB..." style="margin-bottom: 8px;">
-      
-      <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
-        💡 <em>Mẹo:</em> Bạn có thể lấy khóa API hoàn toàn miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--primary-blue); font-weight:700;">Google AI Studio</a>. Nếu không có khóa, hệ thống vẫn tự động kích hoạt <strong>Bộ Tri thức Văn học Thông minh</strong> để phân tích nhân vật chính xác!
-      </div>
 
-      <div class="modal-actions" style="justify-content: space-between;">
-        <button class="btn-danger" id="btnClearApiKey" style="padding: 10px 14px;">Xóa khóa</button>
-        <div style="display:flex; gap: 8px;">
-          <button class="btn-secondary" id="closeAiConfig">Đóng</button>
-          <button class="btn-primary" id="btnSaveApiKey">Lưu & Kích hoạt</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- TOAST NOTIFICATION -->
   <div class="toast" id="toast" role="alert"></div>

@@ -3144,53 +3144,7 @@ function initModals() {
     logoutBtn.addEventListener("click", handleLogout);
   }
 
-  // AI Configuration Modal
-  const aiModal = document.getElementById("aiConfigModal");
-  const openAiBtn = document.getElementById("btnConfigAI");
-  const closeAiBtn = document.getElementById("closeAiConfig");
-  const saveAiBtn = document.getElementById("btnSaveApiKey");
-  const clearAiBtn = document.getElementById("btnClearApiKey");
-  const apiKeyInput = document.getElementById("geminiApiKeyInput");
 
-  if (openAiBtn && aiModal) {
-    openAiBtn.addEventListener("click", () => {
-      playSound('click');
-      const savedKey = localStorage.getItem(STORAGE_KEYS.GEMINI_KEY) || "";
-      if (apiKeyInput) apiKeyInput.value = savedKey;
-      aiModal.classList.add("show");
-    });
-  }
-
-  if (closeAiBtn && aiModal) {
-    closeAiBtn.addEventListener("click", () => {
-      aiModal.classList.remove("show");
-    });
-  }
-
-  if (saveAiBtn && aiModal) {
-    saveAiBtn.addEventListener("click", () => {
-      const keyVal = apiKeyInput.value.trim();
-      if (!keyVal) {
-        toast("Vui lòng nhập Google Gemini API Key!");
-        return;
-      }
-      localStorage.setItem(STORAGE_KEYS.GEMINI_KEY, keyVal);
-      playSound('correct');
-      aiModal.classList.remove("show");
-      updateAIStatusBadge();
-      toast("Đã lưu Gemini API Key! Trợ lý AI sẵn sàng giải đáp mọi câu hỏi.");
-    });
-  }
-
-  if (clearAiBtn && aiModal) {
-    clearAiBtn.addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_KEYS.GEMINI_KEY);
-      if (apiKeyInput) apiKeyInput.value = "";
-      aiModal.classList.remove("show");
-      updateAIStatusBadge();
-      toast("Đã xóa khóa. Hệ thống chuyển sang Tri thức Văn học Thông minh.");
-    });
-  }
 
   // Admin Buttons & Portal Access
   function openAdminPortal() {

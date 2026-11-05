@@ -13,8 +13,8 @@
   {
     "visitorId": "net_test_1",
     "firstVisit": "2026-11-05T02:36:32.856Z",
-    "lastVisit": "2026-11-05T02:36:32.856Z",
-    "visitCount": 1,
+    "lastVisit": "2026-11-05T07:21:50.052Z",
+    "visitCount": 2,
     "ip": "127.0.0.1",
     "userAgent": "netlify-test",
     "studentName": null,
@@ -24,8 +24,8 @@
   {
     "visitorId": "test_vis_1",
     "firstVisit": "2026-11-05T02:29:54.324Z",
-    "lastVisit": "2026-11-05T02:30:31.531Z",
-    "visitCount": 2,
+    "lastVisit": "2026-11-05T07:21:41.013Z",
+    "visitCount": 3,
     "ip": "127.0.0.1",
     "userAgent": "test-agent",
     "studentName": null,

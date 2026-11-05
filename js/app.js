@@ -2520,6 +2520,12 @@ function openResetConfirmModal() {
   if (input) {
     const savedPass = getAdminPasscode();
     input.value = savedPass || "123456";
+    setTimeout(() => {
+      try {
+        input.focus();
+        input.select();
+      } catch (e) {}
+    }, 50);
   }
   if (modal) modal.classList.add("show");
 }

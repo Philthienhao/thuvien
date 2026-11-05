@@ -571,7 +571,8 @@ const STORAGE_KEYS = {
   ADMIN_EMAIL: "skylineAdminEmail",
   ADMIN_ROLE: "skylineAdminRole",
   ADMIN_CAMPUS: "skylineAdminCampus",
-  GEMINI_KEY: "skylineGeminiApiKey"
+  GEMINI_KEY: "skylineGeminiApiKey",
+  PIN: "skylineStudentPin"
 };
 
 let visitorId = localStorage.getItem(STORAGE_KEYS.VISITOR_ID);
@@ -582,6 +583,7 @@ if (!visitorId) {
 
 let currentUserId = localStorage.getItem(STORAGE_KEYS.USER_ID) || null;
 let studentNickname = localStorage.getItem(STORAGE_KEYS.NICKNAME) || localStorage.getItem(STORAGE_KEYS.NAME) || null;
+let studentPin = localStorage.getItem(STORAGE_KEYS.PIN) || "";
 let studentName = studentNickname;
 let studentCampus = localStorage.getItem(STORAGE_KEYS.CAMPUS) || "Cơ sở 1";
 let studentClass = localStorage.getItem(STORAGE_KEYS.CLASS) || studentCampus;
@@ -761,7 +763,27 @@ async function recordVisitOnServer() {
 // ==========================================
 function showLoginModal() {
   const modal = document.getElementById("loginModal");
-  if (modal) modal.classList.add("show");
+  if (modal) {
+    modal.classList.add("show");
+    const nickInput = document.getElementById("loginNicknameInput");
+    const pinInput = document.getElementById("loginPinInput");
+    const campusSelect = document.getElementById("loginCampusSelect");
+    const errBox = document.getElementById("loginStudentErrorMsg");
+
+    if (nickInput && !nickInput.value) {
+      nickInput.value = localStorage.getItem(STORAGE_KEYS.NICKNAME) || "";
+    }
+    if (pinInput && !pinInput.value) {
+      pinInput.value = localStorage.getItem(STORAGE_KEYS.PIN) || "";
+    }
+    if (campusSelect && localStorage.getItem(STORAGE_KEYS.CAMPUS)) {
+      campusSelect.value = localStorage.getItem(STORAGE_KEYS.CAMPUS);
+    }
+    if (errBox) {
+      errBox.style.display = "none";
+      errBox.textContent = "";
+    }
+  }
 }
 
 function hideLoginModal() {
@@ -769,16 +791,35 @@ function hideLoginModal() {
   if (modal) modal.classList.remove("show");
 }
 
-async function handleStudentLogin(nickname, campus, avatar) {
-  if (!nickname || !nickname.trim()) {
-    toast("Vui lòng nhập Biệt danh (Nickname) của em!");
-    return;
+async function handleStudentLogin(nickname, pin, campus, avatar) {
+  const errBox = document.getElementById("loginStudentErrorMsg");
+  if (errBox) {
+    errBox.style.display = "none";
+    errBox.textContent = "";
   }
-  const cleanNickname = nickname.trim();
+
+  const cleanNickname = (nickname || "").trim();
+  const cleanPin = (pin || "").trim();
   const cleanCampus = campus || "Cơ sở 1";
   const cleanAvatar = avatar || "🪐";
 
-  playSound('correct');
+  if (!cleanNickname) {
+    if (errBox) {
+      errBox.textContent = "Vui lòng nhập Biệt danh / Họ tên của em!";
+      errBox.style.display = "block";
+    }
+    toast("Vui lòng nhập Biệt danh của em!");
+    return;
+  }
+
+  if (!cleanPin || cleanPin.length < 4) {
+    if (errBox) {
+      errBox.textContent = "Vui lòng nhập Mã PIN cá nhân tối thiểu 4 số (ví dụ: 1234, 2014) để bảo vệ tài khoản!";
+      errBox.style.display = "block";
+    }
+    toast("Vui lòng nhập Mã PIN từ 4 số trở lên!");
+    return;
+  }
 
   try {
     const res = await fetch("/api/auth/student-login", {
@@ -786,6 +827,7 @@ async function handleStudentLogin(nickname, campus, avatar) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nickname: cleanNickname,
+        pin: cleanPin,
         campus: cleanCampus,
         avatar: cleanAvatar,
         visitorId
@@ -794,12 +836,21 @@ async function handleStudentLogin(nickname, campus, avatar) {
 
     const data = await res.json();
     if (!res.ok || !data.success) {
-      throw new Error(data.error || "Không thể đăng nhập");
+      const errorMsg = data.error || "Không thể đăng nhập";
+      if (errBox) {
+        errBox.textContent = errorMsg;
+        errBox.style.display = "block";
+      }
+      toast(errorMsg);
+      playSound('wrong');
+      return;
     }
 
+    playSound('correct');
     const u = data.user;
     currentUserId = u.id;
     studentNickname = u.nickname || u.name || cleanNickname;
+    studentPin = cleanPin;
     studentName = studentNickname;
     studentCampus = u.campus || cleanCampus;
     studentClass = studentCampus;
@@ -816,43 +867,24 @@ async function handleStudentLogin(nickname, campus, avatar) {
     localStorage.setItem(STORAGE_KEYS.USER_ID, currentUserId);
     localStorage.setItem(STORAGE_KEYS.NICKNAME, studentNickname);
     localStorage.setItem(STORAGE_KEYS.NAME, studentNickname);
+    localStorage.setItem(STORAGE_KEYS.PIN, cleanPin);
     localStorage.setItem(STORAGE_KEYS.CAMPUS, studentCampus);
     localStorage.setItem(STORAGE_KEYS.CLASS, studentCampus);
 
     updateProfileUI();
     hideLoginModal();
 
-    toast(`👋 Chào mừng ${studentNickname} (${studentCampus})! Thông tin bảo mật của em đã được lưu.`);
+    toast(`👋 Chào mừng ${studentNickname} (${studentCampus})! Điểm sao và thử thách của em đã được bảo vệ.`);
     refreshLeaderboard();
     recordVisitOnServer();
     refreshBookRequests();
 
   } catch (err) {
-    currentUserId = 'u_local_' + Date.now();
-    studentNickname = cleanNickname;
-    studentName = cleanNickname;
-    studentCampus = cleanCampus;
-    studentClass = cleanCampus;
-    studentAvatar = cleanAvatar;
-    totalPoints = 0;
-    totalStars = 0;
-    quizStars = 0;
-    reviewStars = 0;
-    requestStars = 0;
-    badges = 0;
-    completedChallenges = 0;
-    readingStreak = 1;
-
-    localStorage.setItem(STORAGE_KEYS.USER_ID, currentUserId);
-    localStorage.setItem(STORAGE_KEYS.NICKNAME, studentNickname);
-    localStorage.setItem(STORAGE_KEYS.NAME, studentNickname);
-    localStorage.setItem(STORAGE_KEYS.CAMPUS, studentCampus);
-    localStorage.setItem(STORAGE_KEYS.CLASS, studentCampus);
-
-    updateProfileUI();
-    hideLoginModal();
-    toast(`👋 Xin chào ${studentNickname} (${studentCampus})! Đã vào thư viện.`);
-    refreshLeaderboard();
+    if (errBox) {
+      errBox.textContent = "Lỗi kết nối máy chủ: " + err.message;
+      errBox.style.display = "block";
+    }
+    toast("Lỗi kết nối: " + err.message);
   }
 }
 
@@ -921,6 +953,7 @@ function handleLogout() {
   if (confirm("Em có muốn đổi tài khoản học sinh khác không? Điểm ⭐ và danh hiệu của em vẫn được lưu an toàn.")) {
     studentNickname = null;
     studentName = null;
+    studentPin = "";
     currentUserId = null;
     totalStars = 0;
     totalPoints = 0;
@@ -930,6 +963,7 @@ function handleLogout() {
     localStorage.removeItem(STORAGE_KEYS.USER_ID);
     localStorage.removeItem(STORAGE_KEYS.NICKNAME);
     localStorage.removeItem(STORAGE_KEYS.NAME);
+    localStorage.removeItem(STORAGE_KEYS.PIN);
     localStorage.removeItem(STORAGE_KEYS.CAMPUS);
     localStorage.removeItem(STORAGE_KEYS.STARS);
     localStorage.removeItem(STORAGE_KEYS.QUIZ_STARS);
@@ -2413,7 +2447,7 @@ function renderAdminTable(users) {
   if (!users || users.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">
+        <td colspan="10" style="text-align:center; padding:30px; color:var(--text-muted);">
           Chưa có học sinh nào đăng nhập vào cơ sở này.
         </td>
       </tr>
@@ -2434,6 +2468,7 @@ function renderAdminTable(users) {
           </div>
         </td>
         <td><span class="tag-badge">${escapeHtml(u.campus || u.studentClass || "Cơ sở 1")}</span></td>
+        <td><code style="background:rgba(37,99,235,0.08); color:#1d4ed8; padding:2px 8px; border-radius:4px; font-weight:700;">${escapeHtml(u.pin || '---')}</code></td>
         <td><strong style="color:var(--primary-blue); font-size:0.95rem;">⭐ ${u.stars || u.points || 0}</strong></td>
         <td>🏅 ${u.badges || 0}</td>
         <td>📖 ${u.challenges || 0}</td>
@@ -2702,17 +2737,47 @@ function initModals() {
     });
   });
 
-  // Submit Student Login (Nickname & Cơ sở)
+  // Submit Student Login (Nickname, PIN & Cơ sở)
+  const triggerStudentLogin = () => {
+    const nickInput = document.getElementById("loginNicknameInput");
+    const pinInput = document.getElementById("loginPinInput");
+    const campusSelect = document.getElementById("loginCampusSelect");
+    handleStudentLogin(
+      nickInput ? nickInput.value : "",
+      pinInput ? pinInput.value : "",
+      campusSelect ? campusSelect.value : "Cơ sở 1",
+      selectedLoginAvatar
+    );
+  };
+
   const btnSubmitStudentLogin = document.getElementById("btnSubmitStudentLogin");
   if (btnSubmitStudentLogin) {
-    btnSubmitStudentLogin.addEventListener("click", () => {
-      const nickInput = document.getElementById("loginNicknameInput");
-      const campusSelect = document.getElementById("loginCampusSelect");
-      handleStudentLogin(
-        nickInput ? nickInput.value : "",
-        campusSelect ? campusSelect.value : "Cơ sở 1",
-        selectedLoginAvatar
-      );
+    btnSubmitStudentLogin.addEventListener("click", triggerStudentLogin);
+  }
+
+  const loginPinInput = document.getElementById("loginPinInput");
+  if (loginPinInput) {
+    loginPinInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") triggerStudentLogin();
+    });
+  }
+
+  const loginNickInput = document.getElementById("loginNicknameInput");
+  if (loginNickInput) {
+    loginNickInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (loginPinInput) loginPinInput.focus();
+        else triggerStudentLogin();
+      }
+    });
+  }
+
+  const togglePinBtn = document.getElementById("togglePinVisibility");
+  if (togglePinBtn && loginPinInput) {
+    togglePinBtn.addEventListener("click", () => {
+      const isPass = loginPinInput.type === "password";
+      loginPinInput.type = isPass ? "text" : "password";
+      togglePinBtn.textContent = isPass ? "🙈" : "👁️";
     });
   }
 

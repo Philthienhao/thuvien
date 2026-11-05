@@ -457,16 +457,16 @@
         </button>
       </div>
 
-      <!-- MỤC 1: ĐĂNG NHẬP HỌC SINH (BẢO MẬT NICKNAME & CƠ SỞ) -->
+      <!-- MỤC 1: ĐĂNG NHẬP HỌC SINH (BẢO MẬT NICKNAME & MÃ PIN CÁ NHÂN) -->
       <div class="login-pane active" id="paneStudentLogin">
         <h3 style="margin-bottom: 6px;">👋 Chào mừng em đến Thư viện ảo Sky-Line!</h3>
         
         <!-- THÔNG BÁO BẢO MẬT DANH TÍNH HỌC SINH -->
         <div class="privacy-notice-box" style="margin: 10px 0 16px; padding: 12px 14px;">
-          <div class="privacy-notice-icon" style="font-size: 24px;">🔒</div>
+          <div class="privacy-notice-icon" style="font-size: 24px;">🔑</div>
           <div class="privacy-notice-text">
-            <b>Bảo mật thông tin học sinh</b>
-            <p>Để đảm bảo quyền riêng tư, em chỉ cần nhập <strong>Biệt danh (Nickname)</strong> và chọn <strong>Cơ sở</strong> của mình để tích lũy ⭐ Ngôi sao thi đua nhận thưởng cuối tháng.</p>
+            <b>Tài khoản vĩnh viễn & Bảo vệ điểm ⭐</b>
+            <p>Em nhập <strong>Biệt danh</strong> và đặt <strong>Mã PIN (4-6 số)</strong> bí mật. Lần sau ở bất kỳ máy nào, chỉ cần nhập lại đúng Tên + Mã PIN để tiếp tục tích lũy sao và nhận quà cuối tháng!</p>
           </div>
         </div>
         
@@ -487,7 +487,15 @@
         </div>
 
         <label class="form-label" for="loginNicknameInput">Nickname (Biệt danh của em) *</label>
-        <input type="text" id="loginNicknameInput" required maxlength="30" placeholder="Ví dụ: Thỏ Trắng, Sóc Nâu, Dế Mèn Nhí, Ken..." style="margin-bottom: 12px;">
+        <input type="text" id="loginNicknameInput" required maxlength="30" placeholder="Ví dụ: Thỏ Trắng, Minh Khang, Dế Mèn Nhí, Ken..." style="margin-bottom: 12px;">
+
+        <label class="form-label" for="loginPinInput">Mã PIN cá nhân (4 - 6 số) *</label>
+        <div style="position: relative; margin-bottom: 12px;">
+          <input type="password" id="loginPinInput" required maxlength="10" placeholder="Ví dụ: 2014, 1234 (Hãy nhớ mã này để đăng nhập lại)..." style="margin-bottom: 0; padding-right: 42px;">
+          <span id="togglePinVisibility" title="Hiện/Ẩn mã PIN" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; user-select: none;">👁️</span>
+        </div>
+
+        <div id="loginStudentErrorMsg" style="color: #b91c1c; font-size: 0.82rem; margin-top: -4px; margin-bottom: 12px; display: none; line-height: 1.4; background: #fee2e2; padding: 8px 12px; border-radius: 6px; border: 1px solid #fca5a5;"></div>
 
         <label class="form-label" for="loginCampusSelect">Chọn Cơ sở Sky-Line em đang học *</label>
         <select class="campus-select" id="loginCampusSelect">
@@ -840,6 +848,7 @@
                 <th style="width: 40px;">STT</th>
                 <th>Học sinh</th>
                 <th>Cơ sở</th>
+                <th>Mã PIN 🔑</th>
                 <th>Tổng Sao ⭐</th>
                 <th>Huy hiệu</th>
                 <th>Thử thách</th>

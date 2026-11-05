@@ -355,10 +355,16 @@ async function handleRequest(req, res) {
   // ==========================================
   if ((pathname === '/api/auth/student-login' || pathname === '/api/auth/login') && req.method === 'POST') {
     try {
-      const { nickname, name, campus, studentClass, avatar, visitorId } = await parseRequestBody(req);
+      const { nickname, name, pin, password, campus, studentClass, avatar, visitorId } = await parseRequestBody(req);
       const cleanNickname = (nickname || name || '').trim();
+      const cleanPin = (pin || password || '').trim();
+
       if (!cleanNickname) {
-        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Nickname (Biệt danh) của em' });
+        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Biệt danh (Nickname) của em' });
+        return;
+      }
+      if (!cleanPin || cleanPin.length < 4) {
+        sendJSON(res, 400, { success: false, error: 'Vui lòng nhập Mã PIN cá nhân tối thiểu 4 số (ví dụ: 1234, 2014) để bảo vệ tài khoản của em!' });
         return;
       }
 
@@ -377,6 +383,7 @@ async function handleRequest(req, res) {
           visitorId: visitorId || null,
           name: cleanNickname,
           nickname: cleanNickname,
+          pin: cleanPin,
           campus: cleanCampus,
           studentClass: cleanCampus,
           avatar: cleanAvatar,
@@ -394,6 +401,20 @@ async function handleRequest(req, res) {
           lastActivity: now
         };
       } else {
+        // Kiểm tra mã PIN bảo vệ tài khoản
+        if (user.pin && user.pin !== cleanPin) {
+          sendJSON(res, 401, {
+            success: false,
+            error: `Mã PIN không đúng cho tài khoản "${cleanNickname}" (${cleanCampus})! Nếu đây là tên của em, vui lòng nhập lại đúng mã PIN đã đặt trước đó. Hoặc em hãy thêm số/ký tự khác vào Biệt danh để tạo tài khoản mới nếu chưa từng đăng ký nhé!`
+          });
+          return;
+        }
+
+        // Nếu tài khoản cũ chưa có mã PIN thì cập nhật mã PIN lần đầu
+        if (!user.pin) {
+          user.pin = cleanPin;
+        }
+
         user.lastLogin = now;
         user.visitCount = (user.visitCount || 1) + 1;
         user.avatar = cleanAvatar;

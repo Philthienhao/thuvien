@@ -65,7 +65,7 @@ function getNetlifyStore() {
     }
   }
   try {
-    const store = netlifyBlobs.getStore('skyline-library-v2');
+    const store = netlifyBlobs.getStore('skyline-library-prod');
     cachedStore = store;
     return store;
   } catch (e) {

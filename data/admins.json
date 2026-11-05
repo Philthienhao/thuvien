@@ -6,29 +6,7 @@
     "role": "super_admin",
     "password": "123456",
     "campus": "Tất cả cơ sở",
-    "createdAt": "2026-11-04T00:00:00.000Z",
+    "createdAt": "2026-11-05T00:00:00.000Z",
     "status": "active"
-  },
-  {
-    "id": "admin_sub_1793763592644",
-    "email": "thaynam.toan@gmail.com",
-    "name": "Thầy Nam (Môn Toán)",
-    "role": "sub_admin",
-    "password": "123456",
-    "campus": "Cơ sở 3",
-    "status": "active",
-    "createdAt": "2026-11-04T03:39:52.644Z",
-    "addedBy": "quyenntn@skylineschool.edu.vn"
-  },
-  {
-    "id": "admin_sub_1793763660625",
-    "email": "co.mai.1793763660610@gmail.com",
-    "name": "Cô Mai (Ngữ Văn)",
-    "role": "sub_admin",
-    "password": "123456",
-    "campus": "Cơ sở 3",
-    "status": "active",
-    "createdAt": "2026-11-04T03:41:00.625Z",
-    "addedBy": "quyenntn@skylineschool.edu.vn"
   }
 ]

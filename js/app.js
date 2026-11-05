@@ -581,6 +581,30 @@ if (!visitorId) {
   localStorage.setItem(STORAGE_KEYS.VISITOR_ID, visitorId);
 }
 
+// RESET TOÀN BỘ DỮ LIỆU ĐĂNG NHẬP THỬ NGHIỆM TRÊN TRÌNH DUYỆT ĐỂ BẮT ĐẦU VẬN HÀNH CHÍNH THỨC
+const SYSTEM_VERSION = "2026.11.05.v1_clean_launch";
+if (localStorage.getItem("skyline_system_version") !== SYSTEM_VERSION) {
+  localStorage.removeItem(STORAGE_KEYS.USER_ID);
+  localStorage.removeItem(STORAGE_KEYS.NICKNAME);
+  localStorage.removeItem(STORAGE_KEYS.NAME);
+  localStorage.removeItem(STORAGE_KEYS.PIN);
+  localStorage.removeItem(STORAGE_KEYS.CAMPUS);
+  localStorage.removeItem(STORAGE_KEYS.CLASS);
+  localStorage.removeItem(STORAGE_KEYS.STARS);
+  localStorage.removeItem(STORAGE_KEYS.POINTS);
+  localStorage.removeItem(STORAGE_KEYS.QUIZ_STARS);
+  localStorage.removeItem(STORAGE_KEYS.REVIEW_STARS);
+  localStorage.removeItem(STORAGE_KEYS.REQUEST_STARS);
+  localStorage.removeItem(STORAGE_KEYS.BADGES);
+  localStorage.removeItem(STORAGE_KEYS.CHALLENGES);
+  localStorage.removeItem(STORAGE_KEYS.STREAK);
+  localStorage.removeItem(STORAGE_KEYS.QUESTS);
+  localStorage.removeItem("skyline_read_today");
+  localStorage.removeItem("skyline_cached_user");
+  localStorage.removeItem("skylineVisitedToday");
+  localStorage.setItem("skyline_system_version", SYSTEM_VERSION);
+}
+
 let currentUserId = localStorage.getItem(STORAGE_KEYS.USER_ID) || null;
 let studentNickname = localStorage.getItem(STORAGE_KEYS.NICKNAME) || localStorage.getItem(STORAGE_KEYS.NAME) || null;
 let studentPin = localStorage.getItem(STORAGE_KEYS.PIN) || "";

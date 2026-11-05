@@ -6,7 +6,21 @@
 const handleRequest = require('../../server.js');
 const { EventEmitter } = require('events');
 
+let netlifyBlobs = null;
+try {
+  netlifyBlobs = require('@netlify/blobs');
+} catch (e) {}
+
 exports.handler = async (event, context) => {
+  // Connect execution context for Netlify Blobs storage in Lambda compatibility mode
+  if (netlifyBlobs && typeof netlifyBlobs.connectLambda === 'function') {
+    try {
+      netlifyBlobs.connectLambda(event);
+    } catch (e) {
+      console.warn('[Netlify Blobs] connectLambda warning:', e.message);
+    }
+  }
+
   // 1. CORS Preflight
   if (event.httpMethod === 'OPTIONS') {
     return {

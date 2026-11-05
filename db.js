@@ -52,25 +52,22 @@ try {
   // @netlify/blobs chưa cài hoặc đang chạy môi trường thuần Node
 }
 
-let cachedStore = undefined;
-
 function getNetlifyStore() {
-  if (cachedStore !== undefined) return cachedStore;
   if (!netlifyBlobs) {
     try {
       netlifyBlobs = require('@netlify/blobs');
     } catch (e) {
-      cachedStore = null;
       return null;
     }
   }
   try {
-    const store = netlifyBlobs.getStore('skyline-library-prod');
-    cachedStore = store;
+    const store = netlifyBlobs.getStore({
+      name: 'skyline-library-prod',
+      consistency: 'strong'
+    });
     return store;
   } catch (e) {
     console.warn('[DB] Netlify Blobs getStore warning:', e.message);
-    cachedStore = null;
     return null;
   }
 }
@@ -81,7 +78,7 @@ async function getBlobOrJSON(key, fileFallback, defaultVal) {
   const store = getNetlifyStore();
   if (store) {
     try {
-      const data = await store.get(key, { type: 'json' });
+      const data = await store.get(key, { type: 'json', consistency: 'strong' });
       if (data !== null && data !== undefined) return data;
       // Seed ban đầu từ file JSON vào Netlify Blobs lần đầu chạy
       const initial = readJSON(fileFallback, defaultVal);
@@ -153,6 +150,7 @@ async function supabaseRest(endpoint, options = {}) {
 // -----------------------------------------------------------------------------
 
 const db = {
+  getNetlifyStore,
   isSupabase: isSupabaseConfigured,
   isNetlify,
 

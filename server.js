@@ -1329,6 +1329,26 @@ async function handleRequest(req, res) {
   }
 
   // ==========================================
+  // API: HỆ THỐNG TRẠNG THÁI & KIỂM TRA LƯU TRỮ NETLIFY BLOBS
+  // ==========================================
+  if (pathname === '/api/system-status' && req.method === 'GET') {
+    try {
+      const store = db.getNetlifyStore();
+      const users = await db.getUsers();
+      sendJSON(res, 200, {
+        success: true,
+        hasNetlifyBlobs: Boolean(store),
+        usersCount: users.length,
+        users: users.map(u => ({ id: u.id, nickname: u.nickname || u.name, campus: u.campus, stars: u.stars || 0 }))
+      });
+      return;
+    } catch (e) {
+      sendJSON(res, 500, { success: false, error: e.message });
+      return;
+    }
+  }
+
+  // ==========================================
   // API: CHAT VỚI NHÂN VẬT VĂN HỌC (GEMINI AI + SMART KNOWLEDGE ENGINE)
   // ==========================================
   if (pathname === '/api/chat' && req.method === 'POST') {
